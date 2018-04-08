@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/L1Demo_Getting_Started.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=L1Demo_Getting_Started.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=l1demogettingstarted.x/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/L1Demo_2018_0x24D.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=L1Demo_2018_0x24D.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=l1demo20180x24d.x/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/l1demogettingstarted.x/bin
+makeDirectory ${TMPDIR}/l1demo20180x24d.x/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/l1demogettingstarted.x.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/l1demo20180x24d.x.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/l1demogettingstarted.x.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/l1demo20180x24d.x.tar *
 checkReturnCode
 
 # Cleanup

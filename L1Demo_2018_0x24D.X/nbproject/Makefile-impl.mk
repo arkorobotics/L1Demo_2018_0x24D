@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=L1Demo_Getting_Started.X
+PROJECTNAME=L1Demo_2018_0x24D.X
 
 # Active Configuration
 DEFAULTCONF=default
