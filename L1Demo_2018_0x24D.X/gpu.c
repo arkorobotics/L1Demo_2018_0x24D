@@ -20,6 +20,8 @@ __eds__ uint8_t GFXDisplayBuffer[GFX_BUFFER_SIZE] __attribute__((section("DISPLA
 
 volatile int fb_ready = 0;
 volatile int vsync = 0;
+volatile static int hline = 0;
+
 int next_fb = 0;
 
 #ifdef DOUBLE_BUFFERED
@@ -36,10 +38,12 @@ void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void)
 			next_fb = !next_fb;
 		}
 		//Nop();Nop();
+        hline = 0;
 		fb_ready = 0;
 		_VMRGNIF = 0;
 	} else if(_HMRGNIF) { /* on each horizontal sync, ...? */
 		lines++;
+        hline++;
 		_HMRGNIF = 0;
 	}
 	_GFX1IF = 0;
@@ -50,7 +54,12 @@ void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void)
     // Wait until the vertical sync
     if(_VMRGNIF) {
         vsync = 0;
+        hline = 0;
         _VMRGNIF = 0;
+    }
+    else if(_HMRGNIF) { /* on each horizontal sync, ...? */
+        hline++;
+        _HMRGNIF = 0;
     }
     _GFX1IF = 0;
 }
@@ -111,6 +120,9 @@ void config_graphics(void)
     int logc=0;
     while (BPP>>logc > 1) { logc++; }
     _DPBPP = _PUBPP = logc;
+
+    _VMRGNIE = 1;
+    _HMRGNIE = 1;
 
     _G1EN = 1;
     __delay_ms(1);
@@ -235,6 +247,17 @@ void waitForBufferFlip()
     #endif
 }
 
+int nonBlockingVsyncWait()
+{
+    while((!_CMDMPT) | _IPUBUSY | _RCCBUSY | _CHRBUSY) continue; // Wait for IPU, RCC, and CHR GPUs to finish drawing
+    return vsync;
+}
+
+uint16_t getHsync()
+{
+    return hline;
+}
+
 void swapBuffers() 
 {
     rcc_setdest(GFXDisplayBuffer[next_fb]);
@@ -278,12 +301,12 @@ void fast_pixel(unsigned long ax, unsigned long ay)
 	G1CMDH = RCC_STARTCOPY;
 	Nop();
 }
- 
+
 void blank_background(void) 
 {
 	//rcc_color(0xff);
 	//rcc_color(0x0);
-    rcc_color(15);
+    rcc_color(0);
 	rcc_draw(0, 0, HOR_RES-1, VER_RES);
 }
 
@@ -303,7 +326,7 @@ void cleanup(void)
 	//rcc_color(0xe0); // neat effect
 	//rcc_color(0xff); // white
 	//rcc_color(0x00);
-	rcc_color(15);
+	rcc_color(0);
     rcc_draw(HOR_RES-1,0, 1,VER_RES);
 }
 

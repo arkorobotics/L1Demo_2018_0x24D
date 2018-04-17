@@ -1,9 +1,9 @@
 #ifndef GPU_H 
 #define GPU_H 
 
-//#define DOUBLE_BUFFERED 1
+#define DOUBLE_BUFFERED 1
 
-#define CLOCKDIV 23
+#define CLOCKDIV 25
 #define HOR_RES 320UL
 #define VER_RES 480UL
 #define HOR_FRONT_PORCH 32
@@ -13,6 +13,95 @@
 #define VER_PULSE_WIDTH 5
 #define VER_BACK_PORCH  10
 
+//#ifdef DOUBLE_BUFFERED
+////80x480@60: 8bpp
+//#define CLOCKDIV 69
+//#define HOR_RES 80UL
+//#define VER_RES 480UL
+//#define HOR_FRONT_PORCH 32
+//#define HOR_PULSE_WIDTH 16
+//#define HOR_BACK_PORCH  32
+//#define VER_FRONT_PORCH 10
+//#define VER_PULSE_WIDTH 5
+//#define VER_BACK_PORCH  10
+//#define BPP 8
+//
+//#else
+////80x480@60: 16bpp
+//#define CLOCKDIV 69
+//#define HOR_RES 80UL
+//#define VER_RES 480UL
+//#define HOR_FRONT_PORCH 32
+//#define HOR_PULSE_WIDTH 16
+//#define HOR_BACK_PORCH  32
+//#define VER_FRONT_PORCH 10
+//#define VER_PULSE_WIDTH 5
+//#define VER_BACK_PORCH  10
+//#define BPP 16
+//#define GFX_BUFFER_SIZE 76800 // This is only for BPP = 16 @480*80
+//#endif
+
+// 160x480@4bpp
+//#define CLOCKDIV 47
+//#define HOR_RES 160UL
+//#define VER_RES 480UL
+//#define HOR_FRONT_PORCH 32
+//#define HOR_PULSE_WIDTH 24
+//#define HOR_BACK_PORCH  32
+//#define VER_FRONT_PORCH 10
+//#define VER_PULSE_WIDTH 5
+//#define VER_BACK_PORCH  10
+//#define BPP 8
+
+// 320x480@4bpp
+//#define CLOCKDIV 25
+//#define HOR_RES 320UL
+//#define VER_RES 480UL
+//#define HOR_FRONT_PORCH 32
+//#define HOR_PULSE_WIDTH 48
+//#define HOR_BACK_PORCH  32
+//#define VER_FRONT_PORCH 10
+//#define VER_PULSE_WIDTH 5
+//#define VER_BACK_PORCH  10
+//#define BPP 4
+
+// 480x480@2bpp
+//#define CLOCKDIV 17
+//#define HOR_RES 480UL
+//#define VER_RES 480UL
+//#define HOR_FRONT_PORCH 32
+//#define HOR_PULSE_WIDTH 64
+//#define HOR_BACK_PORCH  32
+//#define VER_FRONT_PORCH 10
+//#define VER_PULSE_WIDTH 5
+//#define VER_BACK_PORCH  10
+//#define BPP 2
+
+//640x480@60: 1bpp
+//#define CLOCKDIV 11
+//#define HOR_RES 640UL
+//#define VER_RES 480UL
+//#define HOR_FRONT_PORCH 16
+//#define HOR_PULSE_WIDTH 96
+//#define HOR_BACK_PORCH  48
+//#define VER_FRONT_PORCH 10
+//#define VER_PULSE_WIDTH 2
+//#define VER_BACK_PORCH  33
+//#define BPP 1
+
+
+// QVGA:
+//#define CLOCKDIV 58
+//#define HOR_RES 320UL
+//#define VER_RES 240UL
+//#define HOR_FRONT_PORCH 32
+//#define HOR_PULSE_WIDTH 16
+//#define HOR_BACK_PORCH  32
+//#define VER_FRONT_PORCH 5
+//#define VER_PULSE_WIDTH 3
+//#define VER_BACK_PORCH  5
+//#define BPP 8
+
 #ifdef DOUBLE_BUFFERED
 #define BPP 2
 #else
@@ -20,7 +109,7 @@
 #endif
 
 #define VENST_FUDGE 0
-#define HENST_FUDGE -6
+#define HENST_FUDGE 0
 #define VSPOL 0              /* sync polarities */
 #define HSPOL 0
 
@@ -66,6 +155,8 @@ void chr_bg_color(unsigned int color);
 void rcc_setdest(__eds__ uint8_t *buf);
 void gpu_setfb(__eds__ uint8_t *buf);
 void waitForBufferFlip(void);
+int nonBlockingVsyncWait(void);
+uint16_t getHsync();
 void swapBuffers(void);
 void rcc_draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 void fast_pixel(unsigned long ax, unsigned long ay);

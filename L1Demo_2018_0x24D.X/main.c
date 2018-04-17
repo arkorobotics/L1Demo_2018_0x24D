@@ -53,29 +53,12 @@ int main(void)
 	uint16_t c1 = rgb_2_565(180, 180, 180);                                     // Light Grey
 	uint16_t c2 = rgb_2_565(180, 180, 16);                                      // Yellow
 	uint16_t c3 = rgb_2_565(16, 180, 180);                                      // Cyan
-    uint16_t c4 = rgb_2_565(16,180,16);                                         // Green
-    uint16_t c5 = rgb_2_565(180,16,180);                                        // Magenta
-    uint16_t c6 = rgb_2_565(180,16,16);                                         // Red
-    uint16_t c7 = rgb_2_565(16,16,180);                                         // Blue
-    uint16_t c8 = rgb_2_565(235,235,235);                                       // White
-    uint16_t c9 = rgb_2_565(16,16,16);                                          // Light Black
 
  	clut_set(0, c0);                                                            // Load CLUT
  	clut_set(1, c1);
  	clut_set(2, c2);
     clut_set(3, c3);
-    clut_set(4, c4);  
- 	clut_set(5, c5);
- 	clut_set(6, c6);
-    clut_set(7, c7);
- 	clut_set(8, c8);  
- 	clut_set(9, c9);
-    clut_set(10, c0);
-    clut_set(11, c0);
-    clut_set(12, c0);
-    clut_set(13, c0);
-    clut_set(14, c0);
-    clut_set(15, c0);
+
     
     // Draw
 	while (1) 
@@ -84,45 +67,38 @@ int main(void)
 			swapBuffers();                                                      // Before drawing the next frame, we must swap buffers
 		#endif
 
-        //----------------------------------------------------------------------
-        switch(frames)                                                          // Draw each a color bar on the first 7 frames
+        static uint16_t x = 0;
+        static uint16_t y = 0;
+
+        rcc_color(1);
+
+        while((VER_RES - getHsync()) > 100)
         {
-            case 0:
-                rcc_color(1);
-                rcc_draw(1, 0, HOR_RES/7, VER_RES-1);
-                break;
-            case 1:
-                rcc_color(2);
-                rcc_draw(1+((HOR_RES/7)*1), 0, HOR_RES/7, VER_RES-1);
-                break;
-            case 2:
-                rcc_color(3);
-                rcc_draw(1+((HOR_RES/7)*2), 0, HOR_RES/7, VER_RES-1);
-                break;
-            case 3:
-                rcc_color(4);
-                rcc_draw(1+((HOR_RES/7)*3), 0, HOR_RES/7, VER_RES-1);
-                break;
-            case 4:
-                rcc_color(5);
-                rcc_draw(1+((HOR_RES/7)*4), 0, HOR_RES/7, VER_RES-1);
-                break;
-            case 5:
-                rcc_color(6);
-                rcc_draw(1+((HOR_RES/7)*5), 0, HOR_RES/7, VER_RES-1);
-                break;
-            case 6:
-                rcc_color(7);
-                rcc_draw(1+((HOR_RES/7)*6), 0, HOR_RES/7, VER_RES-1);
-                break;
+
+            fast_pixel(sinetable[(2*x)%509]%(HOR_RES-2),2*sinetable[(2*(y+x))%509]%(VER_RES-2));
+            //fast_pixel(x,y);
+            if(x > (HOR_RES-2))
+            {
+                if(y > (VER_RES-2))
+                {
+                    x=0;
+                    y=0;
+                }
+                else
+                {
+                    y++;
+                    
+                    x=0;                
+                }
+            }
+            x++;
+
         }
-        
-		drawBorder(0);
-        //----------------------------------------------------------------------
-        
-		cleanup();                                                              // Housekeeping for VGA signaling
-		waitForBufferFlip();                                                    // For next Vsync
-		frames++;                                                               // Increment frame count
+
+        drawBorder(0);
+        cleanup();                                                          // Housekeeping for VGA signaling
+        waitForBufferFlip();                                                // For next Vsync
+		frames++;                                                           // Increment frame count
 	}
 
 	return 0;
