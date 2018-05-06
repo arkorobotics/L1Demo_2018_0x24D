@@ -12,20 +12,20 @@
 
 uint16_t frames = 0;
 
-struct GFXConfig gfx;
+volatile struct GFXConfig gfx;
 
 __eds__ uint8_t GFXDisplayBuffer[GFX_MAX_BUFFER_SIZE] __attribute__((section("DISPLAY"),space(eds)));
 
-volatile int fb_ready = 0;
+volatile static int fb_ready = 0;
 volatile static int hline = 0;
-
-int next_fb = 0;
+volatile static int next_fb = 0;
 
 void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void) 
 {
 	static int lines = 0;
 	static int syncs = 0;
 	static int next_fb = 1;
+
 	if(_VMRGNIF) 
     { /* on a vertical sync, flip buffers if it's ready */
 		lines = 0;
@@ -43,19 +43,25 @@ void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void)
 			next_fb = !next_fb;
 		}
 		//Nop();Nop();
-        hline = 0;
+        hline = lines;
 		fb_ready = 0;
 		_VMRGNIF = 0;
 	} 
     else if(_HMRGNIF) 
     { /* on each horizontal sync, ...? */
 		lines++;
-        hline++;
+        hline = lines;
 		_HMRGNIF = 0;
 	}
 	_GFX1IF = 0;
 }
 
+void gpu_init(void)
+{
+    _VMRGNIF = 0;
+    _VMRGNIE = 1;
+    _GFX1IE = 1;
+}
 
 void config_graphics(void) 
 {
@@ -230,7 +236,7 @@ void gpu_setfb(__eds__ uint8_t *buf)
 	G1DPADRH = (unsigned long)(buf);
 }
 
-uint8_t gpu_setres(resolution res, framebuffers fb, colordepth bpp)
+uint8_t gpu_set_res(resolution res, framebuffers fb, colordepth bpp)
 {
     switch(res)
     {

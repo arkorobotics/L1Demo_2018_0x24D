@@ -52,8 +52,7 @@ typedef enum
 	BPP_16 = 16
 } colordepth;
 
-extern struct GFXConfig gfx;  
-
+extern volatile struct GFXConfig gfx;  
 
 #define VENST_FUDGE 0
 #define HENST_FUDGE 0
@@ -84,6 +83,7 @@ extern uint16_t frames;
 extern __eds__ uint8_t GFXDisplayBuffer[GFX_MAX_BUFFER_SIZE] __attribute__((section("DISPLAY"),space(eds)));
 
 void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void);
+void gpu_init(void);
 void config_graphics(void);
 void config_clut();
 void clut_set(uint8_t index, uint16_t color);
@@ -94,7 +94,7 @@ void chr_fg_color(unsigned int color);
 void chr_bg_color(unsigned int color);
 void rcc_setdest(__eds__ uint8_t *buf);
 void gpu_setfb(__eds__ uint8_t *buf);
-uint8_t gpu_setres(resolution res, framebuffers fb, colordepth bpp);
+uint8_t gpu_set_res(resolution res, framebuffers fb, colordepth bpp);
 void waitForBufferFlip(void);
 uint16_t getHsync();
 void rcc_draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h);

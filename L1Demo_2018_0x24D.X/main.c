@@ -39,13 +39,9 @@ int main(void)
 	ANSG = 0x0000;
 	TRISB = 0x0000;
 
-	_VMRGNIF = 0;
-	_VMRGNIE = 1;
-	_GFX1IE = 1;
+    gpu_init();
+    gpu_set_res(RES_80x480, DOUBLEBUFFERED, BPP_1);
 
-    gpu_setres(RES_320x480, DOUBLEBUFFERED, 2);
-
-	//config_graphics();                                                          // Configure Graphics, 320 x 480
 	config_clut();                                                              // Configure Color LookUp Table (CLUT)
 	config_chr();                                                               // Configure Font Table
 	config_audio();                                                             // Configure Audio ISR
@@ -71,8 +67,6 @@ int main(void)
 
         rcc_color(1);
 
-        while((gfx.vres - getHsync()) > 100)
-        {
 
             fast_pixel((sinetable[(2*x)%509]+10)%(gfx.hres-2),(1*sinetable[(2*(y+x))%509]+50)%(gfx.vres-2));
             //fast_pixel(x,y);
@@ -91,8 +85,7 @@ int main(void)
                 }
             }
             x++;
-
-        }
+        
 
         drawBorder(0);
         cleanup();                                                          // Housekeeping for VGA signaling
