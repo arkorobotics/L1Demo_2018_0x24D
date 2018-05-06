@@ -53,7 +53,7 @@ const static unsigned short sinetable_small[256] = {
 };
 
 
-void config_timer(void);
+void config_audio(void);
 void __attribute__((__interrupt__)) _T1Interrupt(void);
 void __attribute__((__interrupt__)) _T2Interrupt(void);
 

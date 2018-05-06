@@ -43,10 +43,12 @@ int main(void)
 	_VMRGNIE = 1;
 	_GFX1IE = 1;
 
-	config_graphics();                                                          // Configure Graphics, 320 x 480
+    gpu_setres(RES_320x480, DOUBLEBUFFERED, 2);
+
+	//config_graphics();                                                          // Configure Graphics, 320 x 480
 	config_clut();                                                              // Configure Color LookUp Table (CLUT)
 	config_chr();                                                               // Configure Font Table
-	config_timer();                                                             // Configure Audio ISR
+	config_audio();                                                             // Configure Audio ISR
 	clearbuffers();                                                             // Clear the screen
  	
  	uint16_t c0 = 0;                                                            // Black
@@ -59,27 +61,24 @@ int main(void)
  	clut_set(2, c2);
     clut_set(3, c3);
 
-    
     // Draw
 	while (1) 
 	{
-		#ifdef DOUBLE_BUFFERED
-			swapBuffers();                                                      // Before drawing the next frame, we must swap buffers
-		#endif
+        blank_background();
 
         static uint16_t x = 0;
         static uint16_t y = 0;
 
         rcc_color(1);
 
-        while((VER_RES - getHsync()) > 100)
+        while((gfx.vres - getHsync()) > 100)
         {
 
-            fast_pixel(sinetable[(2*x)%509]%(HOR_RES-2),2*sinetable[(2*(y+x))%509]%(VER_RES-2));
+            fast_pixel((sinetable[(2*x)%509]+10)%(gfx.hres-2),(1*sinetable[(2*(y+x))%509]+50)%(gfx.vres-2));
             //fast_pixel(x,y);
-            if(x > (HOR_RES-2))
+            if(x > (gfx.hres-2))
             {
-                if(y > (VER_RES-2))
+                if(y > (gfx.vres-2))
                 {
                     x=0;
                     y=0;

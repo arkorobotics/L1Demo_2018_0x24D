@@ -2,7 +2,7 @@
 #include "audio.h"
 #include "music.h"
 
-void config_timer(void) 
+void config_audio(void) 
 {
 	PR1 = 0xFF;
 	_T1IP = 5;	// set interrupt priority
