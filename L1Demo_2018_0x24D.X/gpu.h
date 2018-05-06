@@ -1,6 +1,53 @@
 #ifndef GPU_H 
 #define GPU_H 
 
+
+// Available GFX Configurations:
+
+// RES_320x240 (QVGA) IS NOT SUPPORTED FOR THE DEMO PARTY
+// IF YOU WISH TO USE THIS SETTING, PLEASE BRING YOUR OWN PROJECTOR
+
+// Single Buffered:
+// RES_80x480, SINGLEBUFFERED, BPP_1 = 4800KB
+// RES_80x480, SINGLEBUFFERED, BPP_2 = 9600KB
+// RES_80x480, SINGLEBUFFERED, BPP_4 = 19200KB
+// RES_80x480, SINGLEBUFFERED, BPP_8 = 38400KB
+// RES_80x480, SINGLEBUFFERED, BPP_16 = 76800KB
+
+// RES_160x480, SINGLEBUFFERED, BPP_1 = 9600KB
+// RES_160x480, SINGLEBUFFERED, BPP_2 = 19200KB
+// RES_160x480, SINGLEBUFFERED, BPP_4 = 38400KB
+// RES_160x480, SINGLEBUFFERED, BPP_8 = 76800KB
+
+// RES_320x480, SINGLEBUFFERED, BPP_1 = 19200KB
+// RES_320x480, SINGLEBUFFERED, BPP_2 = 38400KB
+// RES_320x480, SINGLEBUFFERED, BPP_4 = 76800KB
+
+// RES_480x480, SINGLEBUFFERED, BPP_1 = 28800KB
+// RES_480x480, SINGLEBUFFERED, BPP_2 = 57600KB
+
+// RES_640x480, SINGLEBUFFERED, BPP_1 = 38400KB
+// RES_640x480, SINGLEBUFFERED, BPP_2 = 76800KB
+
+// Double Buffered:
+//    For double buffering, only combinations with 
+//    total buffer size greater than 32KB work.
+//    Not sure why... let us know if you figure it out.
+
+// RES_80x480, DOUBLEBUFFERED, BPP_4 = 38400KB
+// RES_80x480, DOUBLEBUFFERED, BPP_8 = 76800KB
+
+// RES_160x480, DOUBLEBUFFERED, BPP_2 = 38400KB
+// RES_160x480, DOUBLEBUFFERED, BPP_4 = 76800KB
+
+// RES_320x480, DOUBLEBUFFERED, BPP_1 = 38400KB
+// RES_320x480, DOUBLEBUFFERED, BPP_2 = 76800KB
+
+// RES_480x480, DOUBLEBUFFERED, BPP_1 = 57600KB
+
+// RES_640x480, DOUBLEBUFFERED, BPP_1 = 76800KB
+
+
 struct GFXConfig
 {
    uint16_t frame_buffers;
@@ -59,23 +106,24 @@ extern volatile struct GFXConfig gfx;
 #define VSPOL 0              /* sync polarities */
 #define HSPOL 0
 
-#define CHR_FGCOLOR	     	 0x5000
-#define CHR_BGCOLOR	     	 0x5100
-#define CHR_FONTBASE         0x5200
-#define CHR_PRINTCHAR        0x5300
-#define CHR_PRINTCHARTRANS	 0x5380
-#define CHR_TXTAREASTART     0x5800
-#define CHR_TXTAREAEND       0x5900
-#define CHR_PRINTPOS	     0x5A00
-#define RCC_SRCADDR	     	 0x6200
-#define RCC_DESTADDR	     0x6300
-#define RCC_RECTSIZE	     0x6400
-#define RCC_COLOR	     	 0x6600
-#define RCC_STARTCOPY	     0x6700
-#define IPU_SRCADDR	     	 0x7100
-#define IPU_DESTADDR         0x7200
-#define IPU_DECOMPRESS       0x7400
+#define CHR_FGCOLOR	     	   0x5000
+#define CHR_BGCOLOR	     	   0x5100
+#define CHR_FONTBASE          0x5200
+#define CHR_PRINTCHAR         0x5300
+#define CHR_PRINTCHARTRANS	   0x5380
+#define CHR_TXTAREASTART      0x5800
+#define CHR_TXTAREAEND        0x5900
+#define CHR_PRINTPOS	         0x5A00
+#define RCC_SRCADDR	     	   0x6200
+#define RCC_DESTADDR	         0x6300
+#define RCC_RECTSIZE	         0x6400
+#define RCC_COLOR	     	      0x6600
+#define RCC_STARTCOPY	      0x6700
+#define IPU_SRCADDR	     	   0x7100
+#define IPU_DESTADDR          0x7200
+#define IPU_DECOMPRESS        0x7400
 
+// MAX BUFFER SIZE MUST BE GREATER THAN 32KB IF DOUBLE BUFFERING
 #define GFX_MAX_BUFFER_SIZE 76800
 
 extern uint16_t frames;
@@ -96,7 +144,6 @@ void rcc_setdest(__eds__ uint8_t *buf);
 void gpu_setfb(__eds__ uint8_t *buf);
 uint8_t gpu_set_res(resolution res, framebuffers fb, colordepth bpp);
 void waitForBufferFlip(void);
-uint16_t getHsync();
 void rcc_draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
 void fast_pixel(unsigned long ax, unsigned long ay);
 void blank_background(void);

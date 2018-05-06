@@ -40,56 +40,38 @@ int main(void)
 	TRISB = 0x0000;
 
     gpu_init();
-    gpu_set_res(RES_80x480, DOUBLEBUFFERED, BPP_1);
+    gpu_set_res(RES_160x480, DOUBLEBUFFERED, BPP_4);
 
 	config_clut();                                                              // Configure Color LookUp Table (CLUT)
 	config_chr();                                                               // Configure Font Table
 	config_audio();                                                             // Configure Audio ISR
-	clearbuffers();                                                             // Clear the screen
+	//clearbuffers();                                                             // Clear the screen
  	
  	uint16_t c0 = 0;                                                            // Black
 	uint16_t c1 = rgb_2_565(180, 180, 180);                                     // Light Grey
-	uint16_t c2 = rgb_2_565(180, 180, 16);                                      // Yellow
-	uint16_t c3 = rgb_2_565(16, 180, 180);                                      // Cyan
+	//uint16_t c2 = rgb_2_565(180, 180, 16);                                      // Yellow
+	//uint16_t c3 = rgb_2_565(16, 180, 180);                                      // Cyan
 
  	clut_set(0, c0);                                                            // Load CLUT
  	clut_set(1, c1);
- 	clut_set(2, c2);
-    clut_set(3, c3);
+ 	//clut_set(2, c2);
+    //clut_set(3, c3);
 
     // Draw
 	while (1) 
 	{
         blank_background();
+        
 
-        static uint16_t x = 0;
-        static uint16_t y = 0;
 
         rcc_color(1);
-
-
-            fast_pixel((sinetable[(2*x)%509]+10)%(gfx.hres-2),(1*sinetable[(2*(y+x))%509]+50)%(gfx.vres-2));
-            //fast_pixel(x,y);
-            if(x > (gfx.hres-2))
-            {
-                if(y > (gfx.vres-2))
-                {
-                    x=0;
-                    y=0;
-                }
-                else
-                {
-                    y++;
-                    
-                    x=0;                
-                }
-            }
-            x++;
+        rcc_draw(5,5,40,40);
+        
         
 
         drawBorder(0);
         cleanup();                                                          // Housekeeping for VGA signaling
-        waitForBufferFlip();                                                // For next Vsync
+        waitForBufferFlip();                                                // Flip buffers at the next Vsync
 		frames++;                                                           // Increment frame count
 	}
 

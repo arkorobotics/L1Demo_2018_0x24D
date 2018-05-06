@@ -17,40 +17,20 @@ volatile struct GFXConfig gfx;
 __eds__ uint8_t GFXDisplayBuffer[GFX_MAX_BUFFER_SIZE] __attribute__((section("DISPLAY"),space(eds)));
 
 volatile static int fb_ready = 0;
-volatile static int hline = 0;
-volatile static int next_fb = 0;
 
 void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void) 
 {
-	static int lines = 0;
-	static int syncs = 0;
-	static int next_fb = 1;
-
+	volatile static int lines = 0;
+	
 	if(_VMRGNIF) 
     { /* on a vertical sync, flip buffers if it's ready */
 		lines = 0;
-		syncs++;
-		if(fb_ready == 1 && gfx.frame_buffers == DOUBLEBUFFERED) 
-        {
-			if(next_fb)
-            {
-                gpu_setfb(&GFXDisplayBuffer[0]);
-            }
-            else
-            {
-                gpu_setfb(&GFXDisplayBuffer[0]+gfx.fb_offset);
-            }
-			next_fb = !next_fb;
-		}
-		//Nop();Nop();
-        hline = lines;
 		fb_ready = 0;
 		_VMRGNIF = 0;
 	} 
     else if(_HMRGNIF) 
     { /* on each horizontal sync, ...? */
 		lines++;
-        hline = lines;
 		_HMRGNIF = 0;
 	}
 	_GFX1IF = 0;
@@ -69,21 +49,20 @@ void config_graphics(void)
     _GCLKDIV = gfx.clock_div;
 
     // Display buffer:
-    G1DPADRL = (unsigned long)(&GFXDisplayBuffer[0]) & 0xFFFF;
+    G1DPADRL = (uint32_t)(&GFXDisplayBuffer[0]) & 0xFFFF;
 
     // Work area 1
-    G1W1ADRL = (unsigned long)(&GFXDisplayBuffer[0]) & 0xFFFF;
+    G1W1ADRL = (uint32_t)(&GFXDisplayBuffer[0]) & 0xFFFF;
 
     // Work area 2
-    G1W2ADRL = (unsigned long)(&GFXDisplayBuffer[0]) & 0xFFFF;
+    G1W2ADRL = (uint32_t)(&GFXDisplayBuffer[0]) & 0xFFFF;
 
-    if(gfx.frame_buffers == DOUBLEBUFFERED)
-    {
-        G1DPADRH = (unsigned long)(&GFXDisplayBuffer[0]+gfx.fb_offset) >>16 & 0xFF;
-        G1W1ADRH = (unsigned long)(&GFXDisplayBuffer[0]+gfx.fb_offset) >>16 & 0xFF;
-        G1W2ADRH = (unsigned long)(&GFXDisplayBuffer[0]+gfx.fb_offset) >>16 & 0xFF;
-    }
-
+    //if(gfx.frame_buffers == DOUBLEBUFFERED)
+    //{
+        G1DPADRH = (uint32_t)(&GFXDisplayBuffer[0]) >>16 & 0xFF;
+        G1W1ADRH = (uint32_t)(&GFXDisplayBuffer[0]) >>16 & 0xFF;
+        G1W2ADRH = (uint32_t)(&GFXDisplayBuffer[0]) >>16 & 0xFF;
+    //}
 
     G1PUW = gfx.hres;
     G1PUH = gfx.vres;
@@ -154,8 +133,8 @@ void config_chr(void)
     Nop();
  
     while(_CMDFUL) continue;
-    G1CMDL = (uint16_t)(FontStart) & 0xFFFF;
-    G1CMDH = CHR_FONTBASE;
+    G1CMDL = (uint32_t)(&FontStart[0]) & 0xFFFF;
+    G1CMDH = CHR_FONTBASE | (((uint32_t)(&FontStart[0])>>16) & 0xFF);
     Nop();
  
     while(_CMDFUL) continue;
@@ -164,15 +143,14 @@ void config_chr(void)
     Nop();
  
     while(_CMDFUL) continue;
-    G1CMDL = (gfx.hres & 0xF)<<12 | gfx.vres;
-    G1CMDH = CHR_TXTAREAEND | (gfx.hres >>4);
+    G1CMDL = ((gfx.hres & 0xF) << 12) | gfx.vres;
+    G1CMDH = CHR_TXTAREAEND | (gfx.hres >> 4);
     Nop();
 }
 
 void chr_print(char *c, uint16_t x, uint16_t y, uint8_t transparent) 
 {
-    // Thanks Jamis for this function :P
-
+    // Credits: Jamis
     int maxCharHeight = ((int)gfx.vres)-21;
 
     if (y > maxCharHeight) 
@@ -223,17 +201,17 @@ void chr_bg_color(unsigned int color)
 
 void rcc_setdest(__eds__ uint8_t *buf) 
 {
-	while(!_CMDMPT) continue; // Wait for GPU to finish drawing
-	G1W1ADRL = (unsigned long)(buf);
-	G1W1ADRH = (unsigned long)(buf);
-	G1W2ADRL = (unsigned long)(buf);
-	G1W2ADRH = (unsigned long)(buf);
+	while(!_CMDMPT) continue;  // Wait for GPU to finish drawing
+	G1W1ADRL = (uint32_t)(buf);
+	G1W1ADRH = (uint32_t)(buf);
+	G1W2ADRL = (uint32_t)(buf);
+	G1W2ADRH = (uint32_t)(buf);
 }
  
 void gpu_setfb(__eds__ uint8_t *buf) 
 {
-	G1DPADRL = (unsigned long)(buf);
-	G1DPADRH = (unsigned long)(buf);
+	G1DPADRL = (uint32_t)(buf);
+	G1DPADRH = (uint32_t)(buf);
 }
 
 uint8_t gpu_set_res(resolution res, framebuffers fb, colordepth bpp)
@@ -315,14 +293,14 @@ uint8_t gpu_set_res(resolution res, framebuffers fb, colordepth bpp)
     if(fb == DOUBLEBUFFERED)
     {
         gfx.buffer_size = 2 * ((gfx.hres * gfx.vres) / (8/gfx.bpp));
+        gfx.fb_offset = gfx.buffer_size / 2;
     }
     else
     {
         gfx.buffer_size = ((gfx.hres * gfx.vres) / (8/gfx.bpp));
+        gfx.fb_offset = 0;
     }
     
-    gfx.fb_offset = gfx.buffer_size / 2;
-
     if(gfx.buffer_size <= GFX_MAX_BUFFER_SIZE)
     {
         config_graphics();
@@ -334,15 +312,29 @@ uint8_t gpu_set_res(resolution res, framebuffers fb, colordepth bpp)
 
 void waitForBufferFlip() 
 {
+    static uint8_t next_fb = 1;
+
     while((!_CMDMPT) | _IPUBUSY | _RCCBUSY | _CHRBUSY) continue; // Wait for IPU, RCC, and CHR GPUs to finish drawing
+    
     fb_ready = 1;
+
     while(fb_ready) continue; // wait for vsync
 
-}
-
-uint16_t getHsync()
-{
-    return hline;
+    if(gfx.frame_buffers == DOUBLEBUFFERED)
+    {
+        if(next_fb)
+        {
+            gpu_setfb(&GFXDisplayBuffer[0]);
+            rcc_setdest(&GFXDisplayBuffer[gfx.fb_offset]);
+        }
+        else
+        {
+            gpu_setfb(&GFXDisplayBuffer[gfx.fb_offset]);
+            rcc_setdest(&GFXDisplayBuffer[0]);
+        }
+        
+        next_fb = !next_fb;
+    }
 }
 
 void rcc_draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h) 
@@ -350,7 +342,7 @@ void rcc_draw(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
 	// destination
 	while(_CMDFUL) continue;
 	G1CMDL = x + (y * gfx.hres);
-	G1CMDH = RCC_DESTADDR| (x + (y * (uint32_t)gfx.hres))>>16;
+	G1CMDH = RCC_DESTADDR | (((x + (y * (uint32_t)gfx.hres))>>16) & 0xFF);
 	Nop();
  
 	// size
@@ -371,9 +363,9 @@ void fast_pixel(unsigned long ax, unsigned long ay)
 	//ax += (ay << 9) + (ay << 7);
 	ax += ay * gfx.hres;
 	G1CMDL = ax;
-	G1CMDH = RCC_DESTADDR | ax>>16;
+	G1CMDH = RCC_DESTADDR | ((ax>>16) & 0xFF);
 
-	G1CMDL = 0x1001; // This needs to be changed for non 80x
+	G1CMDL = 0x1000 | gfx.hscale; // This needs to be changed for non 80x
 	G1CMDH = RCC_RECTSIZE;
 
 	while(_CMDFUL) continue;
