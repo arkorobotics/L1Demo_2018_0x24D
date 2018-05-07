@@ -99,7 +99,7 @@ __prog__ uint8_t SpriteMap[] __attribute__((space(prog)))= {
 };
 
 /* Sprites */
-void loadAllSprites(void) 
+void sprites_load_all(void) 
 {
 	uint16_t id, ia, off_data, off_info;
 	off_data = 0;
@@ -125,17 +125,17 @@ void loadAllSprites(void)
 	}
 }
 
-void inline loadSpriteCLUT(uint16_t id)
+void inline sprites_load_clut(uint16_t id)
 {
 	uint8_t clut_idx = 0;
 	for(clut_idx=0; clut_idx<11; clut_idx++)
 	{
-		clut_set(clut_idx, s[id].info.color_array[clut_idx]);
+		gpu_clut_set(clut_idx, s[id].info.color_array[clut_idx]);
 	}
 }
 
 
-void inline drawSprite(uint16_t x, uint16_t y, uint16_t id, uint16_t rotation, uint8_t crt) 
+void inline sprites_draw(uint16_t x, uint16_t y, uint16_t id, uint16_t rotation, uint8_t crt) 
 {
 	unsigned int w,h;
 	uint16_t x1,y1;
@@ -164,21 +164,21 @@ void inline drawSprite(uint16_t x, uint16_t y, uint16_t id, uint16_t rotation, u
 					y1 = y + (h<<crt); //h; //(h<<1);//y+(gfx.hscale*h);
 					if (x1 >= gfx.hres-2) continue; //br
 					if (y1 >= gfx.vres-gfx.hscale) return; //ret
-					fast_pixel(x1, y1);
+					rcc_pixel(x1, y1);
 					break;
 				case 1: // 90 degree CW
 					x1 = x+(s[id].info.width-h-1);
 					y1 = y+(gfx.hscale*(w));
 					if (x1 >= gfx.hres-1 || x1 <= 0) continue;
 					if (y1 >= gfx.vres-gfx.hscale || y1 <= 0) continue;
-					fast_pixel(x1, y1);
+					rcc_pixel(x1, y1);
 					break;
 				case 2: // 180 degree CW
 					x1 = x+(s[id].info.width-w-1);
 					y1 = y+(gfx.hscale*(s[id].info.height-h-1));
 					if (x1 >= gfx.hres-1) continue;
 					if (y1 >= gfx.vres-gfx.hscale) continue;
-					fast_pixel(x1, y1);
+					rcc_pixel(x1, y1);
 					break;
 				case 3: // 90 degree CCW
 					break;
@@ -191,12 +191,7 @@ void inline drawSprite(uint16_t x, uint16_t y, uint16_t id, uint16_t rotation, u
 	//Nop();
 }
 
-int inline nrange(double a, double b) 
-{
-	return (int)((a >= b) ? a-b : b-a);
-}
-
-void drawSpriteRotation(uint16_t x, uint16_t y, uint16_t id, float rotation) 
+void inline sprites_draw_angled(uint16_t x, uint16_t y, uint16_t id, float rotation) 
 {
 	int x1,y1,x2,y2;
 	unsigned int w,h, real_x, real_y;
@@ -218,27 +213,17 @@ void drawSpriteRotation(uint16_t x, uint16_t y, uint16_t id, float rotation)
 			x2 = x1*r_c - y1*r_s;
 			y2 = x1*r_s + y1*r_c;
 
-			real_x = x+nrange(x1,x2);
-			real_y = y + gfx.hscale*nrange(y1,y2);
+			real_x = x+sprites_nrange(x1,x2);
+			real_y = y + gfx.hscale*sprites_nrange(y1,y2);
 
 			if (real_x >= gfx.hres-1 || real_x <= 0) continue;
 			if (real_y >= gfx.vres-gfx.hres || real_y <= 0) continue; // gfx.hscale for screen bordered setup
-			//rcc_draw(real_x, real_y, 1, gfx.hscale);
-			fast_pixel(real_x, real_y);
+			rcc_pixel(real_x, real_y);
 		}
 	}
 }
 
-/* Particles */
-int numPart=0;
-
-void addParticle(void)
+int inline sprites_nrange(double a, double b) 
 {
-    p[numPart].size = 1;
-    p[numPart].posx = rand() % (gfx.hres-2);
-    p[numPart].posy = 1+(rand() % (gfx.vres-7));
-    p[numPart].speedx = 1+(rand() % 2);
-    p[numPart].speedy = 0;
-    p[numPart].color = rand();
-    numPart++;
+	return (int)((a >= b) ? a-b : b-a);
 }

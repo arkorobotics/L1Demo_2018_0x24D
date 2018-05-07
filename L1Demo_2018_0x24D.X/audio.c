@@ -2,9 +2,12 @@
 #include "audio.h"
 #include "music.h"
 
-void config_audio(void) 
+volatile uint32_t time;		// Demo Master Clock
+
+void audio_init(void) 
 {
-	PR1 = 0xFF;
+	time = 0;	// Time Epoch
+	PR1 = 0xFF;	// TODO: Add math for calculating PR1 based on sample freq 
 	_T1IP = 5;	// set interrupt priority
 	_TON  = 1;	// turn on the timer
 	_T1IF = 0;	// reset interrupt flag
@@ -31,7 +34,7 @@ void __attribute__((__interrupt__, auto_psv)) _T1Interrupt(void)
     }
     ch1_val = sinetable[ch1_ncount>>6];
     
-	// DURATION
+	// Duration
 	if(duration < 0x7A1)
 	{
 	 	duration++;
@@ -40,7 +43,8 @@ void __attribute__((__interrupt__, auto_psv)) _T1Interrupt(void)
     {
 	 	idx++;
 
-		if(idx == sizeof(song_ch1f) / sizeof(song_ch1f[0]) ) /* loop it! */
+        // Loop it!
+		if(idx == sizeof(song_ch1f) / sizeof(song_ch1f[0]) ) 
 		{
 			idx = 0;
 		}
@@ -48,8 +52,10 @@ void __attribute__((__interrupt__, auto_psv)) _T1Interrupt(void)
 		duration = 0;
 	}
 	
-	// MIX AND SET AUDIO OUTPUT
+	// Mix and set audio
     PORTB = (ch1_val<<8);
+
+    time++;
 
 	_T1IF = 0;
 }
