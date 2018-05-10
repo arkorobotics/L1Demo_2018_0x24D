@@ -52,7 +52,10 @@ const static unsigned short sinetable_small[256] = {
 0x768c,0x79b1,0x7cd8,0x8000
 };
 
-extern volatile uint32_t time;
+extern volatile uint32_t time_sec;
+extern volatile uint32_t time_subsec;
+
+extern volatile unsigned short ch1_val;
 
 void audio_init(void);
 void __attribute__((__interrupt__)) _T1Interrupt(void);
