@@ -22,10 +22,10 @@ void scene_init(void)
     // Configure settings for all scenes
     scene[0].scene_id = 0;
     scene[0].start_time = 0;
-    scene[0].stop_time = 10;
+    scene[0].stop_time = 100000;
     scene[0].music_track_id = 0;
     scene[0].res = RES_160x480;
-    scene[0].fb_num = DOUBLEBUFFERED;
+    scene[0].fb_num = SINGLEBUFFERED;
     scene[0].color_depth = BPP_4;
 
     scene[1].scene_id = 1;
@@ -33,11 +33,12 @@ void scene_init(void)
     scene[1].stop_time = 20;
     scene[1].music_track_id = 0;
     scene[1].res = RES_320x480;
-    scene[1].fb_num = DOUBLEBUFFERED;
+    scene[1].fb_num = SINGLEBUFFERED;
     scene[1].color_depth = BPP_2;
 
-    // Set the current to the scene #0
+    // Set the current scene to the scene #0
     scene_func = &scene_zero;
+    gpu_set_res(scene[0].res, scene[0].fb_num, scene[0].color_depth);
 }
 
 void scene_render_frame(void)
@@ -71,7 +72,7 @@ void scene_render_frame(void)
         gpu_set_res(scene[scene_index].res, scene[scene_index].fb_num, scene[scene_index].color_depth);
         
         // TODO: Update music track here
-        
+
     }
 
     scene_func();
@@ -79,8 +80,34 @@ void scene_render_frame(void)
 
 void scene_zero(void)
 {
-    rcc_color(1);
-    rcc_line(rand()%(gfx.hres-2),rand()%(gfx.vres-2),rand()%(gfx.hres-2),rand()%(gfx.vres-2),1);
+    static uint16_t init = 0;
+
+    static double h = 0.008;
+    static double a = 10;
+    static double b = 28;
+    static double c = 2.66;
+
+    static double x = 0;
+    static double y = 10;
+    static double z = 10;
+
+    if(init == 0)
+    {
+        gpu_clut_set(1, rgb_2_565(180, 180, 180));
+        gpu_clut_set(2, rgb_2_565(180, 0, 0));
+        gpu_clut_set(3, rgb_2_565(0, 180, 0));
+        gpu_clut_set(4, rgb_2_565(0, 0, 180));
+
+        init = 1;
+    }
+
+    // LORENZ ATTRACTOR   ¯\_(ツ)_/¯
+    x+=h*a*(y-x);               
+    y+=h*(x*(b-z)-y);          
+    z+=h*(x*y-c*z);
+
+    rcc_color((uint16_t)(z)%5);
+    rcc_pixel((uint16_t)(4*(x+20)),(uint16_t)(6*(y+20))+100);
 }
 
 void scene_one(void)
@@ -88,3 +115,4 @@ void scene_one(void)
     rcc_color(1); 
     rcc_rec(0,0,gfx.hres-1,gfx.vres-1);
 }
+
