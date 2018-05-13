@@ -62,7 +62,7 @@ int main(void)
     // Draw!
 	while (1) 
 	{
-        //gpu_clear_fb();
+        gpu_clear_fb();
 
         scene_render_frame();
 

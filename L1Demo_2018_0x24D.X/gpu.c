@@ -381,7 +381,7 @@ void rcc_rec(uint16_t x, uint16_t y, uint16_t w, uint16_t h)
  
 	// go!
 	while(_CMDFUL) continue;
-	G1CMDL = 0xC<<3;
+	G1CMDL = 0x60;
 	G1CMDH = RCC_STARTCOPY;
 	Nop();
 }
