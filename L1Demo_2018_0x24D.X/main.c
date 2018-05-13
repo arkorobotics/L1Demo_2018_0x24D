@@ -62,8 +62,6 @@ int main(void)
     // Draw!
 	while (1) 
 	{
-        gpu_clear_fb();
-
         scene_render_frame();
 
         gpu_draw_border(0);                               // Draw black border (cleans up VGA frame)

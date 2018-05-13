@@ -92,7 +92,6 @@ void scene_zero(void)
     static double x = 0;
     static double y = 10;
     static double z = 10;
-    static float angle = 0;
 
     if(init == 0)
     {
@@ -102,51 +101,38 @@ void scene_zero(void)
         {
             gpu_clut_set(i, rgb_2_565((16*i), (16*i), (16*i) ));
         }
-
+        
         init = 1;
     }
 
-    alu_calc_rot_matrix(angle, 0, 0, 1);
-
-    if(angle < 360)
-    {
-        angle += 10;
-    }
-    else
-    {
-        angle = 0;
-    }
-
-    while(drawcount < 1000)
+    while(drawcount < 5)
     {
         // LORENZ ATTRACTOR   ¯\_(ツ)_/¯
         x+=h*a*(y-x);               
         y+=h*(x*(b-z)-y);          
         z+=h*(x*y-c*z);
 
-        // Rotate it!
-        alu_rot(x, y, z);
+        rcc_color( ((uint16_t)(z/4)%15) );
 
-        rcc_color( ((uint16_t)(outputMatrix[2][0]/4)%15) );
-
-        rcc_pixel((uint16_t)(2*(outputMatrix[0][0]+30)),(uint16_t)(3*(outputMatrix[1][0]+50)));
-
-        //rcc_rec((uint16_t)(4*(x+20)),(uint16_t)(6*(y+40)),(uint16_t)(z/10),(uint16_t)((z/10)*gfx.hscale));
+        rcc_pixel((uint16_t)(3*(x+28)),(uint16_t)(5*(y+50)));
 
         drawcount++;
     }
 
     drawcount = 0;
-    
-    x = 0;
-    y = 10;
-    z = 10;
 
     scene_count++;
 }
 
 void scene_one(void)
 {
+    gpu_clear_fb();
+
+    // Rotate it!
+    //alu_calc_rot_matrix(angle, 0, 0, 1);
+
+    //alu_rot(x, y, z);
+
     rcc_color(1); 
     rcc_rec(0,0,gfx.hres-1,gfx.vres-1);
 }
