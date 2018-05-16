@@ -12,6 +12,7 @@
       <itemPath>color.h</itemPath>
       <itemPath>alu.h</itemPath>
       <itemPath>scene.h</itemPath>
+      <itemPath>voice.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -28,6 +29,7 @@
       <itemPath>color.c</itemPath>
       <itemPath>alu.c</itemPath>
       <itemPath>scene.c</itemPath>
+      <itemPath>voice.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

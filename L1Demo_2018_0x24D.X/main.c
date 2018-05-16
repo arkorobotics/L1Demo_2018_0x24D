@@ -24,6 +24,7 @@
 #include "music.h"
 #include "scene.h"
 #include "sprites.h"
+#include "voice.h"
  
 #define  FCY    16000000UL                                // Instruction cycle frequency, Hz
 #include <libpic30.h>

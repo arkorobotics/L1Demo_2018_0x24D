@@ -4,6 +4,7 @@
 #include <xc.h>
 #include <string.h>
 #include <math.h>
+#include <libpic30.h>
 #include "xc.h"
 #include "alu.h"
 #include "gpu.h"
@@ -12,6 +13,7 @@
 #include "music.h"
 #include "scene.h"
 #include "sprites.h"
+#include "voice.h"
 
 struct Scene scene[TOTAL_NUM_SCENES];
 
@@ -22,19 +24,19 @@ void scene_init(void)
     // Configure settings for all scenes
     scene[0].scene_id = 0;
     scene[0].start_time = 0;
-    scene[0].stop_time = 100000;
+    scene[0].stop_time = 5;
     scene[0].music_track_id = 0;
     scene[0].res = RES_160x480;
     scene[0].fb_num = SINGLEBUFFERED;
     scene[0].color_depth = BPP_4;
 
     scene[1].scene_id = 1;
-    scene[1].start_time = 10;
-    scene[1].stop_time = 20;
+    scene[1].start_time = 5;
+    scene[1].stop_time = 2000;
     scene[1].music_track_id = 0;
-    scene[1].res = RES_320x480;
+    scene[1].res = RES_160x480;
     scene[1].fb_num = SINGLEBUFFERED;
-    scene[1].color_depth = BPP_2;
+    scene[1].color_depth = BPP_4;
 
     // Set the current scene to the scene #0
     scene_func = &scene_zero;
@@ -80,7 +82,20 @@ void scene_render_frame(void)
 
 void scene_zero(void)
 {
-    static uint16_t init = 0;
+    static uint8_t init = 0;
+
+    if(time_sec > 1 && init == 0)
+    {
+        init = 1;
+        voice_init();
+    }
+}
+
+void scene_one(void)
+{
+    static uint8_t init = 0;
+
+    // Draw a '3D' Lorenz Attractor then make it go rainbow!
     static uint16_t scene_count = 0;
     static uint16_t drawcount = 0;
 
@@ -93,19 +108,41 @@ void scene_zero(void)
     static double y = 10;
     static double z = 10;
 
+    static uint16_t red = 255;
+    static uint16_t green = 0;
+    static uint16_t blue = 0;
+
     if(init == 0)
     {
-        int i;
-
-        for(i=1; i<16; i++)
-        {
-            gpu_clut_set(i, rgb_2_565((16*i), (16*i), (16*i) ));
-        }
-        
         init = 1;
+        audio_init();
     }
 
-    while(drawcount < 5)
+    if(red > 0 && blue == 0)
+    {
+        green++;
+        red--;
+    }
+    else if(green > 0)
+    {
+        green--;
+        blue++;
+    }
+    else if(blue > 0)
+    {
+        blue--;
+        red++;
+    }
+
+
+    int i;
+
+    for(i=1; i<15; i++)
+    {
+        gpu_clut_set(i, rgb_2_565( (uint8_t)(16*i)*((double)red/255), (uint8_t)(16*i)*((double)green/255), (uint8_t)(16*i)*((double)blue/255) ));
+    }
+
+    while(drawcount < 10)
     {
         // LORENZ ATTRACTOR   ¯\_(ツ)_/¯
         x+=h*a*(y-x);               
@@ -124,7 +161,7 @@ void scene_zero(void)
     scene_count++;
 }
 
-void scene_one(void)
+void scene_two(void)
 {
     gpu_clear_fb();
 

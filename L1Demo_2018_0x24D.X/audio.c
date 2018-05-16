@@ -1,16 +1,20 @@
 #include "xc.h"
 #include "audio.h"
 #include "music.h"
+#include "voice.h"
 
-volatile uint32_t time_sec;		           // Demo Master Clock
+volatile uint8_t audio_mode = AUDIO_MODE;          // Select Audio or Voice Mode
+volatile uint32_t time_sec;		                   // Demo Master Clock
 volatile uint32_t time_subsec;
 
-volatile unsigned short ch1_val = 0;       // Audio Channel 1
-volatile unsigned short ch2_val = 0;       // Audio Channel 1
-volatile unsigned short ch3_val = 0;       // Audio Channel 1
+volatile unsigned short ch1_val = 0;               // Audio Channel 1
+volatile unsigned short ch2_val = 0;               // Audio Channel 2
+volatile unsigned short ch3_val = 0;               // Audio Channel 3
 
 void audio_init(void) 
 {
+    audio_mode = AUDIO_MODE;
+
     PR1 = 0x100;	// TODO: Add math for calculating PR1 based on sample freq (62.745kHz)
     _T1IP = 5;	// set interrupt priority
     _TON  = 1;	// turn on the timer
@@ -18,11 +22,10 @@ void audio_init(void)
     _T1IE = 1;	// turn on the timer1 interrupt
 
     time_sec = 0;       // Time Epoch
-    time_subsec = 0; 
+    time_subsec = 0;
 }
 
-//_T1Interrupt() is the T1 interrupt service routine (ISR).
-void __attribute__((__interrupt__, auto_psv)) _T1Interrupt(void)
+void audio_isr(void)
 {
     // Song index
 	static unsigned int idx = 0;
@@ -91,3 +94,16 @@ void __attribute__((__interrupt__, auto_psv)) _T1Interrupt(void)
 	_T1IF = 0;
 }
 
+
+//_T1Interrupt() is the T1 interrupt service routine (ISR).
+void __attribute__((__interrupt__, auto_psv)) _T1Interrupt(void)
+{
+    if(audio_mode == AUDIO_MODE)
+    {
+        audio_isr();
+    }
+    else if(audio_mode == VOICE_MODE)
+    {
+        voice_isr();
+    }
+}

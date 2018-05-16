@@ -24,5 +24,6 @@ void scene_render_frame(void);
 
 void scene_zero(void);
 void scene_one(void);
+void scene_two(void);
 
 #endif
