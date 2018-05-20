@@ -44,14 +44,23 @@ void scene_init(void)
     // Lorenz Attractor
     scene[2].scene_id = 2;
     scene[2].start_time = 30;
-    scene[2].stop_time = 2000;
+    scene[2].stop_time = 45;
     scene[2].music_track_id = 2;
     scene[2].res = RES_160x480;
     scene[2].fb_num = SINGLEBUFFERED;
     scene[2].color_depth = BPP_4;
 
+    // Plasma
+    scene[3].scene_id = 3;
+    scene[3].start_time = 45;
+    scene[3].stop_time = 5500;
+    scene[3].music_track_id = 2;
+    scene[3].res = RES_80x480;
+    scene[3].fb_num = DOUBLEBUFFERED;
+    scene[3].color_depth = BPP_4;
+
     // Set the current scene function
-    scene_func = &scene_lorenz;
+    scene_func = &scene_plasma;
 
     // Set the start time
     time_sec = scene[START_SCENE].start_time;
@@ -84,6 +93,9 @@ void scene_render_frame(void)
                 break;
             case 2:
                 scene_func = &scene_lorenz;
+                break;
+            case 3:
+                scene_func = &scene_plasma;
                 break;
 
             default:
@@ -247,16 +259,43 @@ void scene_lorenz(void)
     scene_count++;
 }
 
-void scene_two(void)
+void scene_plasma(void)
 {
-    gpu_clear_fb();
+    static uint8_t init = 0;
 
-    // Rotate it!
-    //alu_calc_rot_matrix(angle, 0, 0, 1);
+    static uint8_t adamschiff = 0;
 
-    //alu_rot(x, y, z);
+    if(init == 0)
+    {
+        init = 1;
+        //audio_init();
+        gpu_clear_all_fb();
 
-    rcc_color(1); 
-    rcc_rec(0,0,gfx.hres-1,gfx.vres-1);
+        int i;
+        for(i=1; i<15; i++)
+        {
+            gpu_clut_set(i, rgb_2_565( 0, (uint8_t)(16*i), 0 ));
+        }
+    }
+
+    int y;
+    int x;
+
+    for(y = 1; y < gfx.vres-1; y=y+gfx.hscale)
+    {
+        for(x = 1; x < gfx.hres-1; x++)
+        {
+            //the plasma buffer is a sum of sines
+            int color = (int)
+            (
+            (sinetable[(uint8_t)x+adamschiff])
+            + (sinetable[(uint8_t)y+adamschiff])
+            );
+
+            rcc_color( color % 15 );
+            rcc_pixel(x,y);
+        }
+    }
+    adamschiff++;
 }
 

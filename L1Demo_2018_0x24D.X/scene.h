@@ -3,8 +3,8 @@
 
 #include "gpu.h"
 
-#define START_SCENE 2
-#define TOTAL_NUM_SCENES 3
+#define START_SCENE 3
+#define TOTAL_NUM_SCENES 4
 
 struct Scene
 {
@@ -26,5 +26,6 @@ void scene_render_frame(void);
 void scene_loadscreen(void);
 void scene_numberstation(void);
 void scene_lorenz(void);
+void scene_plasma(void);
 
 #endif
