@@ -190,6 +190,10 @@ void scene_lorenz(void)
     static uint16_t green = 0;
     static uint16_t blue = 0;
 
+    static double clut_red = 0;
+    static double clut_green = 0;
+    static double clut_blue = 0;
+
     if(init == 0)
     {
         init = 1;
@@ -213,12 +217,15 @@ void scene_lorenz(void)
         red++;
     }
 
+    clut_red = ((double)red/255);
+    clut_green = ((double)green/255);
+    clut_blue = ((double)blue/255);
 
     int i;
 
     for(i=1; i<15; i++)
     {
-        gpu_clut_set(i, rgb_2_565( (uint8_t)(16*i)*((double)red/255), (uint8_t)(16*i)*((double)green/255), (uint8_t)(16*i)*((double)blue/255) ));
+        gpu_clut_set(i, rgb_2_565( (uint8_t)(16*i)*(clut_red), (uint8_t)(16*i)*(clut_green), (uint8_t)(16*i)*(clut_blue) ));
     }
 
     while(drawcount < 100)
