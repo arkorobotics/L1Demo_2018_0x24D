@@ -26,7 +26,7 @@ void scene_init(void)
     // Loading screen
     scene[0].scene_id = 0;
     scene[0].start_time = 0;
-    scene[0].stop_time = 10;
+    scene[0].stop_time = 15;
     scene[0].music_track_id = 0;
     scene[0].res = RES_160x480;
     scene[0].fb_num = SINGLEBUFFERED;
@@ -34,8 +34,8 @@ void scene_init(void)
 
     // Numberstation
     scene[1].scene_id = 1;
-    scene[1].start_time = 10;
-    scene[1].stop_time = 25;
+    scene[1].start_time = 15;
+    scene[1].stop_time = 30;
     scene[1].music_track_id = 1;
     scene[1].res = RES_160x480;
     scene[1].fb_num = SINGLEBUFFERED;
@@ -43,7 +43,7 @@ void scene_init(void)
 
     // Lorenz Attractor
     scene[2].scene_id = 2;
-    scene[2].start_time = 25;
+    scene[2].start_time = 30;
     scene[2].stop_time = 2000;
     scene[2].music_track_id = 2;
     scene[2].res = RES_160x480;
@@ -104,15 +104,57 @@ void scene_render_frame(void)
 void scene_loadscreen(void)
 {
     static uint8_t init = 0;
+    static uint8_t ls_counter = 0;
+    static uint8_t w1 = 0;
+    static uint8_t w2 = 0;
+    static uint8_t w3 = 0;
 
     if(init == 0)
     {
         init = 1;
         gpu_clear_all_fb();
         audio_init();
+        gpu_clut_set(0, 0x0);
+        gpu_clut_set(1, 0xffff);
+        gpu_clut_set(2, 0x37e6);
+        gpu_clut_set(3, 0x1542);
+        gpu_chr_bg_color(0);
+        gpu_chr_fg_color(3);
     }
-
-    // Davo's loading screen here!
+    else
+    {
+        ls_counter ++;
+        if (ls_counter%25 == 0)
+        {
+            if (w3 < 38)
+            {
+                w3 ++;
+            }
+        }
+        if (ls_counter%20 == 0)
+        {
+            if (w2 < 38)
+            {
+                w2 ++;
+            }
+        }
+        if (ls_counter%15 == 0)
+        {
+            if (w1 < 38)
+            {
+                w1 ++;
+            }
+        }
+    }
+    rcc_color(1);
+    rcc_rec(5, 455, w1, 15);
+    rcc_color(2);
+    rcc_rec(5+w1, 455, w2, 15);
+    rcc_color(3);
+    rcc_rec(5+w1+w2, 455, w3, 15);
+    gpu_chr_print("0x24D", 125, 460, 0);
+    
+    rcc_color(0);
 }
 
 void scene_numberstation(void)
