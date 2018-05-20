@@ -3,7 +3,7 @@
 
 #include "gpu.h"
 
-#define START_SCENE 0
+#define START_SCENE 2
 #define TOTAL_NUM_SCENES 3
 
 struct Scene

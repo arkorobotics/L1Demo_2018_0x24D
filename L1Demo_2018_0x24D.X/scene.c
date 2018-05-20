@@ -51,7 +51,7 @@ void scene_init(void)
     scene[2].color_depth = BPP_4;
 
     // Set the current scene function
-    scene_func = &scene_loadscreen;
+    scene_func = &scene_lorenz;
 
     // Set the start time
     time_sec = scene[START_SCENE].start_time;
@@ -179,7 +179,7 @@ void scene_lorenz(void)
         gpu_clut_set(i, rgb_2_565( (uint8_t)(16*i)*((double)red/255), (uint8_t)(16*i)*((double)green/255), (uint8_t)(16*i)*((double)blue/255) ));
     }
 
-    while(drawcount < 10)
+    while(drawcount < 100)
     {
         // LORENZ ATTRACTOR   ¯\_(ツ)_/¯
         x+=h*a*(y-x);               
