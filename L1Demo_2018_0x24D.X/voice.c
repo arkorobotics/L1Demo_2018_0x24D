@@ -47,11 +47,11 @@ void voice_init(void)
 {
     audio_mode = VOICE_MODE;
 
-    PR1 = 0x7D7;	// TODO: Add math for calculating PR1 based on sample freq (62.745kHz)
-    _T1IP = 5;	// set interrupt priority
-    _TON  = 1;	// turn on the timer
-    _T1IF = 0;	// reset interrupt flag
-    _T1IE = 1;	// turn on the timer1 interrupt
+    PR1 = 0x7D7;	 // PR1 Sample Freq (8 kHz)
+    _T1IP = 5;	     // set interrupt priority
+    _TON  = 1;	     // turn on the timer
+    _T1IF = 0;	     // reset interrupt flag
+    _T1IE = 1;	     // turn on the timer1 interrupt
 }
 
 void voice_isr(void)
@@ -122,10 +122,6 @@ void voice_isr(void)
 
                 numberstation_idx++;
             }
-            else
-            {
-                audio_init();
-            }
             
             lastout = 128;
         }
@@ -143,6 +139,15 @@ void voice_isr(void)
 	//update outputs
 	PORTB = 255*out;
     outI++;
+
+    // Time Keeping
+    time_subsec++;
+
+    if(time_subsec >= 0x1F40)
+    {
+        time_sec++;
+        time_subsec = 0;
+    }
 
     // Clear Timer Flag
     _T1IF = 0;

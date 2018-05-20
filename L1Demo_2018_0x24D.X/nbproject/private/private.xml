@@ -6,6 +6,12 @@
         <group>
             <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/gpu.c</file>
             <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/scene.c</file>
+            <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/alu.c</file>
+            <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/alu.h</file>
+            <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/gpu.h</file>
+            <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/voice.h</file>
+            <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/audio.c</file>
+            <file>file:/Users/arko/GitHub/L1Demo_2018_0x24D/L1Demo_2018_0x24D.X/voice.c</file>
         </group>
     </open-files>
 </project-private>

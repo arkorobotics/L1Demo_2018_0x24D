@@ -22,30 +22,47 @@ void (*scene_func)(void);
 void scene_init(void)
 {
     // Configure settings for all scenes
+
+    // Loading screen
     scene[0].scene_id = 0;
     scene[0].start_time = 0;
-    scene[0].stop_time = 5;
+    scene[0].stop_time = 10;
     scene[0].music_track_id = 0;
     scene[0].res = RES_160x480;
     scene[0].fb_num = SINGLEBUFFERED;
     scene[0].color_depth = BPP_4;
 
+    // Numberstation
     scene[1].scene_id = 1;
-    scene[1].start_time = 5;
-    scene[1].stop_time = 2000;
-    scene[1].music_track_id = 0;
+    scene[1].start_time = 10;
+    scene[1].stop_time = 25;
+    scene[1].music_track_id = 1;
     scene[1].res = RES_160x480;
     scene[1].fb_num = SINGLEBUFFERED;
     scene[1].color_depth = BPP_4;
 
-    // Set the current scene to the scene #0
-    scene_func = &scene_zero;
-    gpu_set_res(scene[0].res, scene[0].fb_num, scene[0].color_depth);
+    // Lorenz Attractor
+    scene[2].scene_id = 2;
+    scene[2].start_time = 25;
+    scene[2].stop_time = 2000;
+    scene[2].music_track_id = 2;
+    scene[2].res = RES_160x480;
+    scene[2].fb_num = SINGLEBUFFERED;
+    scene[2].color_depth = BPP_4;
+
+    // Set the current scene function
+    scene_func = &scene_loadscreen;
+
+    // Set the start time
+    time_sec = scene[START_SCENE].start_time;
+
+    // Configure the GPU for the start scene
+    gpu_set_res(scene[START_SCENE].res, scene[START_SCENE].fb_num, scene[START_SCENE].color_depth);
 }
 
 void scene_render_frame(void)
 {
-    static uint16_t scene_index = 0;
+    static uint16_t scene_index = START_SCENE;
 
     // Change scenes when we reach the stop time for the current scene
     if(time_sec >= scene[scene_index].stop_time)
@@ -60,13 +77,17 @@ void scene_render_frame(void)
         switch(scene_index)
         {
             case 0:
-                scene_func = &scene_zero;
+                scene_func = &scene_loadscreen;
                 break;
             case 1:
-                scene_func = &scene_one;
+                scene_func = &scene_numberstation;
                 break;
+            case 2:
+                scene_func = &scene_lorenz;
+                break;
+
             default:
-                scene_func = &scene_zero;
+                scene_func = &scene_loadscreen;
                 break;
         }
         
@@ -80,18 +101,33 @@ void scene_render_frame(void)
     scene_func();
 }
 
-void scene_zero(void)
+void scene_loadscreen(void)
 {
     static uint8_t init = 0;
 
-    if(time_sec > 1 && init == 0)
+    if(init == 0)
     {
         init = 1;
+        gpu_clear_all_fb();
+        audio_init();
+    }
+
+    // Davo's loading screen here!
+}
+
+void scene_numberstation(void)
+{
+    static uint8_t init = 0;
+
+    if(init == 0)
+    {
+        init = 1;
+        gpu_clear_all_fb();
         voice_init();
     }
 }
 
-void scene_one(void)
+void scene_lorenz(void)
 {
     static uint8_t init = 0;
 
@@ -115,6 +151,7 @@ void scene_one(void)
     if(init == 0)
     {
         init = 1;
+        gpu_clear_all_fb();
         audio_init();
     }
 

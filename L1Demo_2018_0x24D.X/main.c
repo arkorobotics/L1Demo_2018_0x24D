@@ -54,9 +54,6 @@ int main(void)
     gpu_clut_set(0, 0);                                   // Load CLUT
     gpu_clut_set(1, rgb_2_565(180, 180, 180));
 
-    // Initialize Audio
-    audio_init();                                         // Configure Audio ISR
-
     // Initialize Scene Manager
     scene_init();
 

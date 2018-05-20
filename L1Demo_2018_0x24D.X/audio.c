@@ -15,11 +15,11 @@ void audio_init(void)
 {
     audio_mode = AUDIO_MODE;
 
-    PR1 = 0x100;	// TODO: Add math for calculating PR1 based on sample freq (62.745kHz)
-    _T1IP = 5;	// set interrupt priority
-    _TON  = 1;	// turn on the timer
-    _T1IF = 0;	// reset interrupt flag
-    _T1IE = 1;	// turn on the timer1 interrupt
+    PR1 = 0x100;	 // PR1 Sample Freq (62.5 kHz)
+    _T1IP = 5;	     // set interrupt priority
+    _TON  = 1;	     // turn on the timer
+    _T1IF = 0;	     // reset interrupt flag
+    _T1IE = 1;	     // turn on the timer1 interrupt
 
     time_sec = 0;       // Time Epoch
     time_subsec = 0;

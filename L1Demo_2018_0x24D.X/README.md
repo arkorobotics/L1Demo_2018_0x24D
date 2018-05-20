@@ -1,1 +1,1 @@
-# Group Submission: 0x24D - Layerone 2017 - Demo Party
+# Group Submission: 0x24D - Layerone 2018 - Demo Party
