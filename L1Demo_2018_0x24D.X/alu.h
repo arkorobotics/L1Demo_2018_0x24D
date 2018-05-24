@@ -13,4 +13,7 @@ int realtoint(float oldval, float oldmin, float oldmax, float newmin, float newm
 void alu_rot(double x, double y, double z);
 void alu_calc_rot_matrix(double angle, double u, double v, double w);
 
+float alu_sin(float angle);
+float alu_cos(float angle);
+
 #endif

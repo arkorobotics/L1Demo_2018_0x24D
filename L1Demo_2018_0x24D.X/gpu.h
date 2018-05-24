@@ -128,6 +128,8 @@ extern volatile struct GFXConfig gfx;
 
 extern volatile uint32_t frames;
 
+extern volatile uint8_t fb_index;
+
 extern __eds__ uint8_t GFXDisplayBuffer[GFX_MAX_BUFFER_SIZE] __attribute__((section("DISPLAY"),space(eds)));
 
 void __attribute__((interrupt, auto_psv))_GFX1Interrupt(void);

@@ -37,7 +37,7 @@ void scene_init(void)
     scene[1].start_time = 15;
     scene[1].stop_time = 30;
     scene[1].music_track_id = 1;
-    scene[1].res = RES_160x480;
+    scene[1].res = RES_80x480;
     scene[1].fb_num = SINGLEBUFFERED;
     scene[1].color_depth = BPP_4;
 
@@ -53,14 +53,23 @@ void scene_init(void)
     // Plasma
     scene[3].scene_id = 3;
     scene[3].start_time = 45;
-    scene[3].stop_time = 5500;
+    scene[3].stop_time = 55;
     scene[3].music_track_id = 2;
     scene[3].res = RES_80x480;
     scene[3].fb_num = DOUBLEBUFFERED;
     scene[3].color_depth = BPP_4;
 
+    // Parachute
+    scene[4].scene_id = 4;
+    scene[4].start_time = 55;
+    scene[4].stop_time = 5500;
+    scene[4].music_track_id = 2;
+    scene[4].res = RES_160x480;
+    scene[4].fb_num = DOUBLEBUFFERED;
+    scene[4].color_depth = BPP_4;
+
     // Set the current scene function
-    scene_func = &scene_plasma;
+    scene_func = &scene_loadscreen;
 
     // Set the start time
     time_sec = scene[START_SCENE].start_time;
@@ -96,6 +105,9 @@ void scene_render_frame(void)
                 break;
             case 3:
                 scene_func = &scene_plasma;
+                break;
+            case 4:
+                scene_func = &scene_parachute;
                 break;
 
             default:
@@ -176,7 +188,10 @@ void scene_numberstation(void)
     if(init == 0)
     {
         init = 1;
+        sprites_load_all();
+        sprites_load_clut(0);
         gpu_clear_all_fb();
+        sprites_draw(30, 150, 0, 1, 0);
         voice_init();
     }
 }
@@ -297,5 +312,85 @@ void scene_plasma(void)
         }
     }
     adamschiff++;
+}
+
+void scene_parachute(void)
+{
+    //Physics Constants
+    static float d2Theta1 = 0;
+    static float d2Theta2 = 0;
+    static float dTheta1  = 0;
+    static float dTheta2  = 0;
+    static float Theta1   = 0*(M_PI)/2;
+    static float Theta2   = 1*(M_PI)/2;
+    static float mu     = 1;
+    static float m1     = 10;
+    static float m2     = 10;
+    static float l1     = 40;
+    static float l2     = 40;
+
+    static float X0     = 80;
+    static float Y0     = 40;
+
+    static float g      = 9.8;
+    static float dt     = 0.05;
+
+    static float X1 = 0;
+    static float Y1 = 0;
+
+    static float X2 = 0;
+    static float Y2 = 0;
+
+    static uint8_t init = 0;
+
+    if(init == 0)
+    {
+        init = 1;
+        //audio_init();
+        //gpu_clear_all_fb();
+        gpu_clut_set(0, 0);
+        gpu_clut_set(1, rgb_2_565( 255, 255, 255 ));
+        gpu_clut_set(2, rgb_2_565( 255, 0, 0 ));
+        gpu_clut_set(3, rgb_2_565( 0, 255, 0 ));
+
+        int i;
+        for(i=0; i<MAX_PARTICLES; i++)
+        {
+            p[i].size = 0;
+            p[i].posx = 0;
+            p[i].posy = 0;
+            p[i].speedx = 0;
+            p[i].speedx = 0;
+            p[i].color = 0;
+        }
+    }
+    else
+    {
+        float sin_t1 = sin(Theta1);
+        float cos_t1 = cos(Theta1);
+        float sin_t2 = sin(Theta2);
+        float cos_t2 = cos(Theta2);
+        float sin_t1_t2 = sin(Theta1-Theta2);
+        float cos_t1_t2 = cos(Theta1-Theta2);
+
+        mu        =  1+m1/m2;
+        d2Theta1  =  (g*(sin_t2*cos_t1_t2-mu*sin_t1)-(l2*dTheta2*dTheta2+l1*dTheta1*dTheta1*cos_t1_t2)*sin_t1_t2)/(l1*(mu-cos_t1_t2*cos_t1_t2));
+        d2Theta2  =  (mu*g*(sin_t1*cos_t1_t2-sin_t2)+(mu*l1*dTheta1*dTheta1+l2*dTheta2*dTheta2*cos_t1_t2)*sin_t1_t2)/(l2*(mu-cos_t1_t2*cos_t1_t2));
+        dTheta1   += d2Theta1*dt;
+        dTheta2   += d2Theta2*dt;
+        Theta1    += dTheta1*dt;
+        Theta2    += dTheta2*dt;
+
+        X1 = (X0+l1*sin_t1);
+        Y1 = (Y0+(l1*cos_t1));
+ 
+        X2 = (X1+l2*sin_t2);
+        Y2 = (Y1+(l2*cos_t2));     
+
+        gpu_clear_fb();
+
+        rcc_line(X0,Y0*((float)gfx.hscale),X1,Y1*((float)gfx.hscale),1);
+        rcc_line(X1,Y1*((float)gfx.hscale),X2,Y2*((float)gfx.hscale),1);
+    }
 }
 

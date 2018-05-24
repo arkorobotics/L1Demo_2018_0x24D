@@ -62,7 +62,7 @@ int main(void)
 	{
         scene_render_frame();
 
-        gpu_draw_border(0);                               // Draw black border (cleans up VGA frame)
+        //gpu_draw_border(0);                               // Draw black border (cleans up VGA frame)
         gpu_flip_fb();                                    // Flip buffers at the next Vsync
 		frames++;                                         // Increment frame count
     }

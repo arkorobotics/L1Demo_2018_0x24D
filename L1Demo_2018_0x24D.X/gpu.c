@@ -12,7 +12,11 @@
 #include <libpic30.h>
 
 volatile struct GFXConfig gfx;
+
 volatile uint32_t frames = 0;
+
+volatile uint8_t fb_index = 1;
+
 volatile static int vsync = 0;
 
 __eds__ uint8_t GFXDisplayBuffer[GFX_MAX_BUFFER_SIZE] __attribute__((section("DISPLAY"),space(eds)));
@@ -204,10 +208,8 @@ void gpu_set_fb(__eds__ uint8_t *buf)
     G1DPADRH = (uint32_t)(buf);
 }
 
-void gpu_flip_fb() 
+void gpu_flip_fb(void) 
 {
-    static uint8_t fb_index = 1;
-
     while((!_CMDMPT) | _IPUBUSY | _RCCBUSY | _CHRBUSY) continue; // Wait for IPU, RCC, and CHR GPUs to finish drawing
     
     vsync = 1;
@@ -216,7 +218,7 @@ void gpu_flip_fb()
 
     if(gfx.frame_buffers == DOUBLEBUFFERED)
     {
-        if(fb_index)
+        if(fb_index == 1)
         {
             gpu_set_fb(&GFXDisplayBuffer[0]);
             rcc_set_fb_dest(&GFXDisplayBuffer[gfx.fb_offset]);
@@ -404,15 +406,25 @@ void rcc_pixel(unsigned long ax, unsigned long ay)
 // TODO: Slow function, speed it up by changing datatypes and do approx
 void rcc_line(float x1, float y1, float x2, float y2, uint8_t color) 
 {
+    rcc_color(color);
+
     unsigned int i;
-    double hl=fabs(x2-x1), vl=fabs(y2-y1), length=(hl>vl)?hl:vl;
-    float deltax=(x2-x1)/(float)length, deltay=(y2-y1)/(float)length;
+
+    float hl = fabs(x2-x1);
+    float vl = fabs(y2-y1); 
+    
+    float length = sqrt(pow(hl,2)+pow(vl,2)); //(hl>vl)?hl:vl;
+    
+    float deltax = (x2-x1)/length;
+    float deltay = (y2-y1)/length;
+    
     for (i=0; i<(int)length; i++) 
     {
-        unsigned long x=(int)(x1+=deltax), y=(int)(y1+=deltay);
+        uint16_t x = (uint16_t)(x1+=deltax);
+        uint16_t y = (uint16_t)(y1+=deltay);
+
         if ((x<gfx.hres)&&(y<gfx.vres)) 
         {
-            rcc_color(color);
             rcc_pixel(x,y);
         }
     }

@@ -4,6 +4,7 @@
 #include <xc.h>
 #include <string.h>
 #include <math.h>
+#include "audio.h"
 #include "alu.h"
 
 double rotationMatrix[4][4];
@@ -78,3 +79,46 @@ void alu_calc_rot_matrix(double angle, double u, double v, double w)
     rotationMatrix[3][3] = 1.0;
 }
 
+float alu_sin(float angle)
+{
+	static float bob;
+	static float lut_angle;
+	static uint16_t lut_sin;
+
+	// Angle: radians
+	if(angle < 0)
+	{
+		lut_angle = (float)(81.4)*(-1.0*angle);
+		lut_sin = sinetable[(uint16_t)(lut_angle)%511];
+		bob =  (float)( ( ((float)lut_sin)-127 )/128);
+	}
+	else
+	{
+		lut_angle = (float)(81.4)*(angle);
+		lut_sin = sinetable[(uint16_t)(lut_angle)%511];
+		bob =  (float)( ( ((float)lut_sin)-127 )/128);
+	}
+	return bob;
+}
+
+float alu_cos(float angle)
+{
+	static float bob;
+	static float lut_angle;
+	static uint16_t lut_sin;
+
+	// Angle: radians
+	if(angle < 0)
+	{
+		lut_angle = (float)(81.4)*(-1.0*(angle+(M_PI)/2));
+		lut_sin = sinetable[(uint16_t)(lut_angle)%511];
+		bob =  (float)( ( ((float)lut_sin)-127 )/128);
+	}
+	else
+	{
+		lut_angle = (float)(81.4)*((angle+(M_PI)/2));
+		lut_sin = sinetable[(uint16_t)(lut_angle)%511];
+		bob =  (float)( ( ((float)lut_sin)-127 )/128);
+	}
+	return bob;
+}
