@@ -53,7 +53,7 @@ void scene_init(void)
     // Plasma
     scene[3].scene_id = 3;
     scene[3].start_time = 45;
-    scene[3].stop_time = 55;
+    scene[3].stop_time = 65;
     scene[3].music_track_id = 2;
     scene[3].res = RES_80x480;
     scene[3].fb_num = DOUBLEBUFFERED;
@@ -61,12 +61,30 @@ void scene_init(void)
 
     // Parachute
     scene[4].scene_id = 4;
-    scene[4].start_time = 55;
-    scene[4].stop_time = 5500;
+    scene[4].start_time = 65;
+    scene[4].stop_time = 80;
     scene[4].music_track_id = 2;
     scene[4].res = RES_160x480;
     scene[4].fb_num = DOUBLEBUFFERED;
     scene[4].color_depth = BPP_4;
+
+    // Hackers
+    scene[5].scene_id = 5;
+    scene[5].start_time = 80;
+    scene[5].stop_time = 100;
+    scene[5].music_track_id = 2;
+    scene[5].res = RES_160x480;
+    scene[5].fb_num = SINGLEBUFFERED;
+    scene[5].color_depth = BPP_4;
+
+    // Twister
+    scene[6].scene_id = 6;
+    scene[6].start_time = 100;
+    scene[6].stop_time = 5500;
+    scene[6].music_track_id = 2;
+    scene[6].res = RES_160x480;
+    scene[6].fb_num = SINGLEBUFFERED;
+    scene[6].color_depth = BPP_4;
 
     // Set the current scene function
     scene_func = &scene_loadscreen;
@@ -109,7 +127,12 @@ void scene_render_frame(void)
             case 4:
                 scene_func = &scene_parachute;
                 break;
-
+            case 5:
+                scene_func = &scene_hackers;
+                break;
+            case 6:
+                scene_func = &scene_credits;
+                break;
             default:
                 scene_func = &scene_loadscreen;
                 break;
@@ -376,7 +399,7 @@ void scene_parachute(void)
         mu        =  1+m1/m2;
         d2Theta1  =  (g*(sin_t2*cos_t1_t2-mu*sin_t1)-(l2*dTheta2*dTheta2+l1*dTheta1*dTheta1*cos_t1_t2)*sin_t1_t2)/(l1*(mu-cos_t1_t2*cos_t1_t2));
         d2Theta2  =  (mu*g*(sin_t1*cos_t1_t2-sin_t2)+(mu*l1*dTheta1*dTheta1+l2*dTheta2*dTheta2*cos_t1_t2)*sin_t1_t2)/(l2*(mu-cos_t1_t2*cos_t1_t2));
-        dTheta1   += d2Theta1*dt;
+        dTheta1   += d2Theta1*dt;                                                           
         dTheta2   += d2Theta2*dt;
         Theta1    += dTheta1*dt;
         Theta2    += dTheta2*dt;
@@ -393,4 +416,50 @@ void scene_parachute(void)
         rcc_line(X1,Y1*((float)gfx.hscale),X2,Y2*((float)gfx.hscale),1);
     }
 }
+
+void scene_hackers(void)
+{
+    static uint8_t init = 0;
+
+    if(init == 0)
+    {
+        init = 1;
+        gpu_clear_all_fb();
+
+        //COMMENT THIS OUT
+        sprites_load_all();
+        
+        sprites_load_clut(2);
+
+        sprites_draw(20, 100, 2, 1, 0);
+    }
+}
+
+void scene_credits(void)
+{
+    static uint8_t init = 0;
+
+    if(init == 0)
+    {
+        init = 1;
+
+        gpu_clear_all_fb();
+
+        //COMMENT THIS OUT
+        sprites_load_all();
+        
+        sprites_load_clut(1);
+
+        rcc_color(1);
+        gpu_chr_print("0x24D CREW", 20, 60, 0);
+        gpu_chr_print("ARKO", 20, 100, 0);
+        gpu_chr_print("DAVO", 20, 120, 0);
+        gpu_chr_print("PINGUINO", 20, 140, 0);
+        gpu_chr_print("NECROFILIAC", 20, 160, 0);
+        gpu_chr_print("KNIGHT", 20, 180, 0);
+        sprites_draw(80, 200, 1, 1, 0);
+    }
+}
+
+
 
