@@ -17,8 +17,6 @@ extern volatile uint32_t time_subsec;
 extern volatile unsigned short ch1_val;
 extern volatile unsigned short ch2_val;
 extern volatile unsigned short ch3_val;
-extern volatile unsigned short ch4_val;
-extern volatile unsigned short ch5_val;
 
 void audio_init(void);
 void audio_isr(void);
