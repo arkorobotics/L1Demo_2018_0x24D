@@ -74,7 +74,7 @@ extern int numPart;
 
 void inline sprites_load_all(void);
 void inline sprites_load_clut(uint16_t id);
-void inline sprites_draw(uint16_t x, uint16_t y, uint16_t id, uint16_t rotation, uint8_t crt);
+void inline sprites_draw(int16_t x, int16_t y, uint16_t id, uint16_t rotation, uint8_t crt);
 void inline sprites_draw_angled(uint16_t x, uint16_t y, uint16_t id, float rotation);
 int inline sprites_nrange(double a, double b);
 

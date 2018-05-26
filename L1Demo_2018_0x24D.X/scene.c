@@ -80,7 +80,7 @@ void scene_init(void)
     // Shibe
     scene[6].scene_id = 6;
     scene[6].start_time = 100;
-    scene[6].stop_time = 120;
+    scene[6].stop_time = 110;
     scene[6].music_track_id = 2;
     scene[6].res = RES_160x480;
     scene[6].fb_num = SINGLEBUFFERED;
@@ -88,7 +88,7 @@ void scene_init(void)
 
     // Credits
     scene[7].scene_id = 7;
-    scene[7].start_time = 120;
+    scene[7].start_time = 110;
     scene[7].stop_time = 5500;
     scene[7].music_track_id = 2;
     scene[7].res = RES_160x480;
@@ -140,6 +140,9 @@ void scene_render_frame(void)
                 scene_func = &scene_hackers;
                 break;
             case 6:
+                scene_func = &scene_shibe;
+                break;
+            case 7:
                 scene_func = &scene_credits;
                 break;
             default:
@@ -443,11 +446,39 @@ void scene_hackers(void)
         gpu_clear_all_fb();
 
         //COMMENT THIS OUT
-        sprites_load_all();
+        //sprites_load_all();
         
         sprites_load_clut(2);
 
         sprites_draw(20, 100, 2, 1, 0);
+    }
+}
+
+void scene_shibe(void)
+{
+    static uint8_t init = 0;
+    static int16_t scroll_count = 0;
+    static int16_t scroll_rate = 1;
+    static int16_t scroll = 0;
+
+    if(init == 0)
+    {
+        init = 1;
+        gpu_clear_all_fb();
+
+        //COMMENT THIS OUT
+        sprites_load_all();
+        
+        sprites_load_clut(3);
+
+        sprites_draw(scroll, 10, 3, 4, 0);
+    }
+
+    if(scroll > -130)
+    {
+        scroll--;
+        //gpu_clear_fb();
+        sprites_draw(scroll, 10, 3, 4, 0);
     }
 }
 

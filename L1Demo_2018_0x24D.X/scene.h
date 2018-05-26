@@ -4,7 +4,7 @@
 #include "gpu.h"
 
 #define START_SCENE 0
-#define TOTAL_NUM_SCENES 7
+#define TOTAL_NUM_SCENES 8
 
 struct Scene
 {
@@ -29,6 +29,7 @@ void scene_lorenz(void);
 void scene_plasma(void);
 void scene_parachute(void);
 void scene_hackers(void);
+void scene_shibe(void);
 void scene_credits(void);
 
 #endif
