@@ -44,7 +44,7 @@ void scene_init(void)
     // Lorenz Attractor
     scene[2].scene_id = 2;
     scene[2].start_time = 30;
-    scene[2].stop_time = 45;
+    scene[2].stop_time = 40;
     scene[2].music_track_id = 2;
     scene[2].res = RES_160x480;
     scene[2].fb_num = SINGLEBUFFERED;
@@ -52,8 +52,8 @@ void scene_init(void)
 
     // Plasma
     scene[3].scene_id = 3;
-    scene[3].start_time = 45;
-    scene[3].stop_time = 65;
+    scene[3].start_time = 40;
+    scene[3].stop_time = 60;
     scene[3].music_track_id = 2;
     scene[3].res = RES_80x480;
     scene[3].fb_num = DOUBLEBUFFERED;
@@ -61,7 +61,7 @@ void scene_init(void)
 
     // Parachute
     scene[4].scene_id = 4;
-    scene[4].start_time = 65;
+    scene[4].start_time = 60;
     scene[4].stop_time = 80;
     scene[4].music_track_id = 2;
     scene[4].res = RES_160x480;
@@ -80,7 +80,7 @@ void scene_init(void)
     // Shibe
     scene[6].scene_id = 6;
     scene[6].start_time = 100;
-    scene[6].stop_time = 110;
+    scene[6].stop_time = 120;
     scene[6].music_track_id = 2;
     scene[6].res = RES_160x480;
     scene[6].fb_num = SINGLEBUFFERED;
@@ -434,6 +434,40 @@ void scene_parachute(void)
         rcc_line(X0,Y0*((float)gfx.hscale),X1,Y1*((float)gfx.hscale),1);
         rcc_line(X1,Y1*((float)gfx.hscale),X2,Y2*((float)gfx.hscale),1);
     }
+
+
+    char buf[255];
+    char greets[] = "                                                GREETS TO CHARLIEX ~ COINE ~ DATAGRAM ~ FSPHIL ~ HOTDOGS ~ JAMIS ~ JBUM ~ JKING ~ MMCA ~ MR1337357 ~ MERLIN ~ MORFIR                                                         ";
+    
+    static uint8_t i = 1;
+    static uint8_t s = 0;
+    static int8_t y_trans = 0;
+    static uint16_t framers = 0;
+
+    for(i = 1; i < 64; i++)
+    {
+        buf[0] = greets[i+s];
+        buf[1] = '\0';
+
+        gpu_chr_fg_color(1);
+        gpu_chr_print(buf,i*6,400,1);
+    }
+
+    y_trans++; 
+
+    if(framers%20 == 0)
+    {
+        s++;
+    }
+
+    if(s > 150)
+    {
+        s = 0;
+        i = 1;
+        y_trans=0;
+    }
+
+    framers++;
 }
 
 void scene_hackers(void)
@@ -457,8 +491,6 @@ void scene_hackers(void)
 void scene_shibe(void)
 {
     static uint8_t init = 0;
-    static int16_t scroll_count = 0;
-    static int16_t scroll_rate = 1;
     static int16_t scroll = 0;
 
     if(init == 0)
@@ -467,7 +499,7 @@ void scene_shibe(void)
         gpu_clear_all_fb();
 
         //COMMENT THIS OUT
-        sprites_load_all();
+        //sprites_load_all();
         
         sprites_load_clut(3);
 
@@ -493,7 +525,7 @@ void scene_credits(void)
         gpu_clear_all_fb();
 
         //COMMENT THIS OUT
-        sprites_load_all();
+        //sprites_load_all();
         
         sprites_load_clut(1);
 
