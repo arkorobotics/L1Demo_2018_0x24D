@@ -71,7 +71,7 @@ void scene_init(void)
     // Hackers
     scene[5].scene_id = 5;
     scene[5].start_time = 80;
-    scene[5].stop_time = 100;
+    scene[5].stop_time = 95;
     scene[5].music_track_id = 2;
     scene[5].res = RES_160x480;
     scene[5].fb_num = SINGLEBUFFERED;
@@ -79,8 +79,8 @@ void scene_init(void)
 
     // Shibe
     scene[6].scene_id = 6;
-    scene[6].start_time = 100;
-    scene[6].stop_time = 120;
+    scene[6].start_time = 95;
+    scene[6].stop_time = 125;
     scene[6].music_track_id = 2;
     scene[6].res = RES_160x480;
     scene[6].fb_num = SINGLEBUFFERED;
@@ -88,7 +88,7 @@ void scene_init(void)
 
     // Credits
     scene[7].scene_id = 7;
-    scene[7].start_time = 110;
+    scene[7].start_time = 125;
     scene[7].stop_time = 5500;
     scene[7].music_track_id = 2;
     scene[7].res = RES_160x480;
@@ -437,7 +437,7 @@ void scene_parachute(void)
 
 
     char buf[255];
-    char greets[] = "                                                GREETS TO CHARLIEX ~ COINE ~ DATAGRAM ~ FSPHIL ~ HOTDOGS ~ JAMIS ~ JBUM ~ JKING ~ MMCA ~ MR1337357 ~ MERLIN ~ MORFIR                                                         ";
+    char greets[] = "          GREETS TO CHARLIEX ~ COINE ~ DATAGRAM ~ FSPHIL ~ HOTDOGS ~ JAMIS ~ JBUM ~ JKING ~ MMCA ~ MR1337357 ~ MERLIN ~ MORFIR                                                         ";
     
     static uint8_t i = 1;
     static uint8_t s = 0;
@@ -455,7 +455,7 @@ void scene_parachute(void)
 
     y_trans++; 
 
-    if(framers%20 == 0)
+    if(framers%4 == 0)
     {
         s++;
     }
@@ -508,7 +508,7 @@ void scene_shibe(void)
 
     if(scroll > -130)
     {
-        scroll--;
+        scroll=scroll-6;
         //gpu_clear_fb();
         sprites_draw(scroll, 10, 3, 4, 0);
     }
@@ -535,7 +535,7 @@ void scene_credits(void)
         gpu_chr_print("DAVO", 20, 120, 0);
         gpu_chr_print("PINGUINO", 20, 140, 0);
         gpu_chr_print("NECROFILIAC", 20, 160, 0);
-        gpu_chr_print("KNIGHT", 20, 180, 0);
+        gpu_chr_print("THE KNIGHT", 20, 180, 0);
         sprites_draw(80, 200, 1, 1, 0);
     }
 }

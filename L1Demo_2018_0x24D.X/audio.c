@@ -5,8 +5,8 @@
 
 volatile uint8_t audio_mode = AUDIO_MODE;          // Select Audio or Voice Mode
 volatile uint8_t audio_track = 0;
-volatile uint32_t time_sec;		                   // Demo Master Clock
-volatile uint32_t time_subsec;
+volatile uint32_t time_sec = 0;		                   // Demo Master Clock
+volatile uint32_t time_subsec = 0;
 
 volatile uint8_t last_audio_track = 0;
 volatile unsigned short ch1_val = 0;               // Audio Channel 1
@@ -22,9 +22,6 @@ void audio_init(void)
     _TON  = 1;	     // turn on the timer
     _T1IF = 0;	     // reset interrupt flag
     _T1IE = 1;	     // turn on the timer1 interrupt
-
-    time_sec = 0;       // Time Epoch
-    time_subsec = 0;
 }
 
 void audio_isr(void)
