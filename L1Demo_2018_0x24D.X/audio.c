@@ -132,7 +132,7 @@ void audio_isr(void)
         }
 
         // Mix and set audio
-        PORTB = (ch1_val<<5) + (ch2_val<<4) + (ch3_val<<3);
+        PORTB = ((ch1_val<<4) + (ch2_val<<3) + (ch3_val<<2)) << 2;
     }
     else
     {
