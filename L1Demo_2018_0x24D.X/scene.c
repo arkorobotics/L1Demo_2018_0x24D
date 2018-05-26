@@ -156,8 +156,9 @@ void scene_render_frame(void)
         {
             gpu_set_res(scene[scene_index].res, scene[scene_index].fb_num, scene[scene_index].color_depth);
         }
-        // TODO: Update music track here
 
+        // Update music track here
+        audio_track = scene[scene_index].music_track_id;
     }
 
     scene_func();
