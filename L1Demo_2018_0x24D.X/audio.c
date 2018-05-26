@@ -81,7 +81,7 @@ void audio_isr(void)
         }
 
         // Mix and set audio
-        PORTB = (ch1_val<<4);
+        PORTB = (ch1_val<<6);
     }
     else if(audio_track == 2)
     {
@@ -95,14 +95,14 @@ void audio_isr(void)
         }
 
         // Do Channel 2 Stuff
-        ch2_ncount += song_us3_ch2f[idx] - 1;
+        ch2_ncount += song_us3_ch4f[idx] - 1;
         if (ch2_ncount > 0x803f)
         {
             ch2_ncount = 0;
         }
 
         // Do Channel 3 Stuff
-        ch3_ncount += song_us3_ch3f[idx] - 1;
+        ch3_ncount += song_us3_ch6f[idx] - 1;
         if (ch3_ncount > 0x803f)
         {
             ch3_ncount = 0;
@@ -123,7 +123,7 @@ void audio_isr(void)
             idx++;
 
             // Loop it!
-            if(idx == sizeof(song_us3_ch3f) / sizeof(song_us3_ch3f[0]) ) 
+            if(idx == sizeof(song_us3_ch4f) / sizeof(song_us3_ch4f[0]) ) 
             {
                 idx = 0;
             }
@@ -132,7 +132,7 @@ void audio_isr(void)
         }
 
         // Mix and set audio
-        PORTB = (ch1_val<<6) + (ch2_val<<6) + (ch3_val<<6);
+        PORTB = ((ch1_val<<4) + (ch2_val<<3) + (ch3_val<<2)) << 2;
     }
     else
     {
