@@ -77,14 +77,23 @@ void scene_init(void)
     scene[5].fb_num = SINGLEBUFFERED;
     scene[5].color_depth = BPP_4;
 
-    // Twister
+    // Shibe
     scene[6].scene_id = 6;
     scene[6].start_time = 100;
-    scene[6].stop_time = 5500;
+    scene[6].stop_time = 120;
     scene[6].music_track_id = 2;
     scene[6].res = RES_160x480;
     scene[6].fb_num = SINGLEBUFFERED;
     scene[6].color_depth = BPP_4;
+
+    // Credits
+    scene[7].scene_id = 7;
+    scene[7].start_time = 120;
+    scene[7].stop_time = 5500;
+    scene[7].music_track_id = 2;
+    scene[7].res = RES_160x480;
+    scene[7].fb_num = SINGLEBUFFERED;
+    scene[7].color_depth = BPP_4;
 
     // Set the current scene function
     scene_func = &scene_loadscreen;
@@ -139,8 +148,14 @@ void scene_render_frame(void)
         }
         
         // Configure new graphics settings
-        gpu_set_res(scene[scene_index].res, scene[scene_index].fb_num, scene[scene_index].color_depth);
-        
+        if((scene_index != 0) &&
+           ( (scene[scene_index].res != scene[scene_index-1].res) ||
+             (scene[scene_index].fb_num != scene[scene_index-1].fb_num) ||
+             (scene[scene_index].color_depth != scene[scene_index-1].color_depth)
+           ))
+        {
+            gpu_set_res(scene[scene_index].res, scene[scene_index].fb_num, scene[scene_index].color_depth);
+        }
         // TODO: Update music track here
 
     }
