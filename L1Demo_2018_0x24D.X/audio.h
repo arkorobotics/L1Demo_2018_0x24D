@@ -9,6 +9,7 @@ const static unsigned short sinetable[512] = {
 };
 
 extern volatile uint8_t audio_mode;
+extern volatile uint8_t audio_track;
 
 extern volatile uint32_t time_sec;
 extern volatile uint32_t time_subsec;
