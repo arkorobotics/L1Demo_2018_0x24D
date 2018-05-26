@@ -180,6 +180,14 @@ void inline sprites_draw(uint16_t x, uint16_t y, uint16_t id, uint16_t rotation,
 					break;
 				case 3: // 90 degree CCW
 					break;
+				case 4:	// Scroll
+					x1 = x+(s[id].info.width-h-1);
+					y1 = y+(gfx.hscale*(w));
+					if (x1 >= gfx.hres-1 || x1 <= 0) continue;
+					if (y1 >= gfx.vres-gfx.hscale || y1 <= 0) continue;
+					rcc_pixel(x1, y1);
+					break;
+					break;
 				default:
 					break;
 			}
