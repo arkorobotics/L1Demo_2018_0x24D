@@ -12,6 +12,8 @@ volatile uint8_t last_audio_track = 0;
 volatile unsigned short ch1_val = 0;               // Audio Channel 1
 volatile unsigned short ch2_val = 0;               // Audio Channel 2
 volatile unsigned short ch3_val = 0;               // Audio Channel 3
+volatile unsigned short ch4_val = 0;               // Audio Channel 4
+volatile unsigned short ch5_val = 0;               // Audio Channel 5
 
 void audio_init(void) 
 {
@@ -36,6 +38,8 @@ void audio_isr(void)
     static unsigned int ch1_ncount = 0;
     static unsigned int ch2_ncount = 0;
     static unsigned int ch3_ncount = 0;
+    static unsigned int ch4_ncount = 0;
+    static unsigned int ch5_ncount = 0;
     
     // Check if we've changed tracks
     if(last_audio_track != audio_track)
@@ -45,8 +49,11 @@ void audio_isr(void)
         ch1_ncount = 0;
         ch2_ncount = 0;
         ch3_ncount = 0;
+        ch4_ncount = 0;
+        ch5_ncount = 0;
         last_audio_track = audio_track;
     }
+    audio_track = 2;
     
     if(audio_track == 0)
     {
@@ -102,16 +109,32 @@ void audio_isr(void)
         }
 
         // Do Channel 3 Stuff
-        ch3_ncount += song_us3_ch3f[idx] - 1;
+        ch3_ncount += song_us3_ch4f[idx] - 1;
         if (ch3_ncount > 0x803f)
         {
             ch3_ncount = 0;
+        }
+        
+        // Do Channel 4 Stuff
+        ch4_ncount += song_us3_ch6f[idx] - 1;
+        if (ch4_ncount > 0x803f)
+        {
+            ch4_ncount = 0;
+        }
+        
+        // Do Channel 5 Stuff
+        ch5_ncount += song_us3_ch7f[idx] - 1;
+        if (ch5_ncount > 0x803f)
+        {
+            ch5_ncount = 0;
         }
 
         // Get value for each channel from the sine table
         ch1_val = sinetable[ch1_ncount>>6];
         ch2_val = sinetable[ch2_ncount>>6];
         ch3_val = sinetable[ch3_ncount>>6];
+        ch4_val = sinetable[ch2_ncount>>6];
+        ch5_val = sinetable[ch3_ncount>>6];
 
         // Duration
         if(duration < 0x7A1)
@@ -123,7 +146,7 @@ void audio_isr(void)
             idx++;
 
             // Loop it!
-            if(idx == sizeof(song_us3_ch3f) / sizeof(song_us3_ch3f[0]) ) 
+            if(idx == sizeof(song_us3_ch7f) / sizeof(song_us3_ch7f[0]) ) 
             {
                 idx = 0;
             }
@@ -132,7 +155,8 @@ void audio_isr(void)
         }
 
         // Mix and set audio
-        PORTB = (ch1_val<<6) + (ch2_val<<6) + (ch3_val<<6);
+        // PORTB = (ch1_val<<4) + (ch2_val<<5) + (ch3_val<<4) + (ch4_val<<4) + (ch5_val<<5);
+        PORTB = (ch1_val<<4) + (ch2_val<<2) + (ch3_val<<2) + (ch4_val<<2) + (ch5_val<<4);
     }
     else
     {
